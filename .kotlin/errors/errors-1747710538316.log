@@ -1,0 +1,606 @@
+kotlin version: 2.1.20
+error message: org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
+File being compiled: /Users/yuguangyou/Documents/PopCode/robot_face/robot/src/main/kotlin/com/popkter/robot/Robot.kt
+The root cause java.lang.RuntimeException was thrown at: org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:48)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException(CodegenUtil.kt:107)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException$default(CodegenUtil.kt:90)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:54)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:41)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:27)
+	at org.jetbrains.kotlin.config.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:62)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.invokeCodegen(JvmIrCodegenFactory.kt:371)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.runCodegen$cli(KotlinToJVMBytecodeCompiler.kt:413)
+	at org.jetbrains.kotlin.cli.pipeline.jvm.JvmBackendPipelinePhase.executePhase(JvmBackendPipelinePhase.kt:98)
+	at org.jetbrains.kotlin.cli.pipeline.jvm.JvmBackendPipelinePhase.executePhase(JvmBackendPipelinePhase.kt:30)
+	at org.jetbrains.kotlin.cli.pipeline.PipelinePhase.phaseBody(PipelinePhase.kt:68)
+	at org.jetbrains.kotlin.cli.pipeline.PipelinePhase.phaseBody(PipelinePhase.kt:58)
+	at org.jetbrains.kotlin.config.phaser.SimpleNamedCompilerPhase.phaseBody(CompilerPhase.kt:215)
+	at org.jetbrains.kotlin.config.phaser.NamedCompilerPhase.invoke(CompilerPhase.kt:111)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:28)
+	at org.jetbrains.kotlin.config.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:62)
+	at org.jetbrains.kotlin.cli.pipeline.AbstractCliPipeline.runPhasedPipeline(AbstractCliPipeline.kt:106)
+	at org.jetbrains.kotlin.cli.pipeline.AbstractCliPipeline.execute(AbstractCliPipeline.kt:65)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecutePhased(K2JVMCompiler.kt:61)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecutePhased(K2JVMCompiler.kt:36)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:80)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.exec(CLICompiler.kt:337)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:466)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:75)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:514)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:431)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileNonIncrementally(IncrementalCompilerRunner.kt:310)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:137)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:678)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1805)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN name:Robot visibility:public modality:FINAL <> (viewModel:com.popkter.robot.viewmodel.RobotViewModel) returnType:kotlin.Unit
+  annotations:
+    Composable
+  VALUE_PARAMETER name:viewModel index:0 type:com.popkter.robot.viewmodel.RobotViewModel
+  BLOCK_BODY
+    VAR name:json type:kotlinx.serialization.json.JsonElement [val]
+      CALL 'public final fun parseToJsonElement (string: kotlin.String): kotlinx.serialization.json.JsonElement [fake_override] declared in kotlinx.serialization.json.Json.Default' type=kotlinx.serialization.json.JsonElement origin=null
+        $this: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Default type:kotlinx.serialization.json.Json.Default visibility:public [final,static] declared in kotlinx.serialization.json.Json' type=kotlinx.serialization.json.Json.Default origin=null
+        string: CALL 'public final fun encodeToString <T> (value: T of kotlinx.serialization.json.Json.encodeToString): kotlin.String [inline] declared in kotlinx.serialization.json.Json' type=kotlin.String origin=null
+          <T>: com.popkter.robot.status.RobotStatus
+          $this: TYPE_OP type=kotlinx.serialization.json.Json origin=IMPLICIT_CAST typeOperand=kotlinx.serialization.json.Json
+            GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Default type:kotlinx.serialization.json.Json.Default visibility:public [final,static] declared in kotlinx.serialization.json.Json' type=kotlinx.serialization.json.Json.Default origin=null
+          value: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:com.popkter.robot.status.Focus visibility:public [final,static] declared in com.popkter.robot.status.Focus' type=com.popkter.robot.status.Focus origin=null
+    CALL 'public final fun println (message: kotlin.Any?): kotlin.Unit [inline] declared in kotlin.io.ConsoleKt' type=kotlin.Unit origin=null
+      message: STRING_CONCATENATION type=kotlin.String
+        CONST String type=kotlin.String value="Focus Json = "
+        GET_VAR 'val json: kotlinx.serialization.json.JsonElement [val] declared in com.popkter.robot.RobotKt.Robot' type=kotlinx.serialization.json.JsonElement origin=null
+    VAR PROPERTY_DELEGATE name:robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> [val]
+      TYPE_OP type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>
+        CALL 'public final fun collectAsStateWithLifecycle$default <T> (lifecycleOwner: androidx.lifecycle.LifecycleOwner?, minActiveState: androidx.lifecycle.Lifecycle.State?, context: kotlin.coroutines.CoroutineContext?, $mask0: kotlin.Int, $handler: kotlin.Any?): androidx.compose.runtime.State<T of androidx.lifecycle.compose.FlowExtKt.collectAsStateWithLifecycle$default> declared in androidx.lifecycle.compose.FlowExtKt' type=androidx.compose.runtime.State<T of androidx.lifecycle.compose.FlowExtKt.collectAsStateWithLifecycle$default> origin=DEFAULT_DISPATCH_CALL
+          <T>: com.popkter.robot.status.RobotStatus
+          $receiver: CALL 'public final fun <get-robotStatus> (): kotlinx.coroutines.flow.StateFlow<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.viewmodel.RobotViewModel' type=kotlinx.coroutines.flow.StateFlow<com.popkter.robot.status.RobotStatus> origin=GET_PROPERTY
+            $this: GET_VAR 'viewModel: com.popkter.robot.viewmodel.RobotViewModel declared in com.popkter.robot.RobotKt.Robot' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+          lifecycleOwner: COMPOSITE type=androidx.lifecycle.LifecycleOwner? origin=DEFAULT_VALUE
+            CONST Null type=androidx.lifecycle.LifecycleOwner? value=null
+          minActiveState: COMPOSITE type=androidx.lifecycle.Lifecycle.State? origin=DEFAULT_VALUE
+            CONST Null type=androidx.lifecycle.Lifecycle.State? value=null
+          context: COMPOSITE type=kotlin.coroutines.CoroutineContext? origin=DEFAULT_VALUE
+            CONST Null type=kotlin.coroutines.CoroutineContext? value=null
+          $mask0: CONST Int type=kotlin.Int value=7
+          $handler: CONST Null type=kotlin.Any? value=null
+    VAR name:eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> [val]
+      CALL 'public final fun remember <T> (calculation: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposablesKt.remember>): T of androidx.compose.runtime.ComposablesKt.remember [inline] declared in androidx.compose.runtime.ComposablesKt' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+        <T>: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>
+        calculation: BLOCK type=kotlin.Function0<androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>> origin=LAMBDA
+          COMPOSITE type=kotlin.Unit origin=null
+          FUNCTION_REFERENCE 'private final fun Robot$lambda$1 ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>): androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt' type=kotlin.Function0<androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>> origin=INLINE_LAMBDA reflectionTarget=null
+            $robotStatus$delegate: GET_VAR 'val robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+    CALL 'public final fun LaunchedEffect (key1: kotlin.Any?, block: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>): kotlin.Unit declared in androidx.compose.runtime.EffectsKt' type=kotlin.Unit origin=null
+      key1: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+      block: BLOCK type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+        CLASS SUSPEND_LAMBDA CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.coroutines.jvm.internal.SuspendLambda; kotlin.jvm.functions.Function2<kotlinx.coroutines.CoroutineScope, kotlin.coroutines.Continuation<kotlin.Unit>?, kotlin.Any?>]
+          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+          FIELD name:label type:kotlin.Int visibility:public/*package*/
+          CONSTRUCTOR SUSPEND_LAMBDA visibility:public/*package*/ <> ($robotStatus$delegate:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>, $eyeTransitionState:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $completion:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?) returnType:com.popkter.robot.RobotKt.Robot.<no name provided> [primary]
+            VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$robotStatus$delegate index:0 type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>
+            VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$eyeTransitionState index:1 type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>
+            VALUE_PARAMETER name:$completion index:2 type:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?
+            BLOCK_BODY
+              SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                value: GET_VAR '$robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.<init>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+              SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                value: GET_VAR '$eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.<init>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> (arity: kotlin.Int, $completion: kotlin.coroutines.Continuation<kotlin.Any?>?) declared in kotlin.coroutines.jvm.internal.SuspendLambda'
+                arity: CONST Int type=kotlin.Int value=2
+                $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.<init>' type=kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>? origin=null
+              BLOCK type=kotlin.Unit origin=null
+          FUN name:invokeSuspend visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, $result:kotlin.Result<kotlin.Any?>) returnType:kotlin.Any?
+            overridden:
+              protected abstract fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in kotlin.coroutines.jvm.internal.SuspendLambda
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER name:$result index:0 type:kotlin.Result<kotlin.Any?>
+            BLOCK_BODY
+              CALL 'public final fun collectLatest <T> (action: kotlin.coroutines.SuspendFunction1<@[ParameterName(name = "value")] T of kotlinx.coroutines.flow.FlowKt.collectLatest, kotlin.Unit>, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in kotlinx.coroutines.flow.FlowKt' type=kotlin.Unit origin=null
+                <T>: com.popkter.robot.status.RobotStatus
+                $receiver: CALL 'public final fun snapshotFlow <T> (block: kotlin.Function0<T of androidx.compose.runtime.SnapshotStateKt.snapshotFlow>): kotlinx.coroutines.flow.Flow<T of androidx.compose.runtime.SnapshotStateKt.snapshotFlow> declared in androidx.compose.runtime.SnapshotStateKt' type=kotlinx.coroutines.flow.Flow<com.popkter.robot.status.RobotStatus> origin=null
+                  <T>: com.popkter.robot.status.RobotStatus
+                  block: BLOCK type=kotlin.Function0<com.popkter.robot.status.RobotStatus> origin=LAMBDA
+                    COMPOSITE type=kotlin.Unit origin=null
+                    CALL 'public final fun <jvm-indy> <T> (dynamicCall: T of kotlin.jvm.internal.<jvm-indy>, bootstrapMethodHandle: kotlin.Any, vararg bootstrapMethodArguments: kotlin.Any): T of kotlin.jvm.internal.<jvm-indy> declared in kotlin.jvm.internal' type=kotlin.Function0<com.popkter.robot.status.RobotStatus> origin=null
+                      <T>: kotlin.Function0<com.popkter.robot.status.RobotStatus>
+                      dynamicCall: CALL 'public final fun invoke (p0: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>): kotlin.Function0<com.popkter.robot.status.RobotStatus> declared in kotlin.jvm.internal.invokeDynamic' type=kotlin.Function0<com.popkter.robot.status.RobotStatus> origin=null
+                        p0: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+                          receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                      bootstrapMethodHandle: CALL 'public final fun <jvm-method-handle> (tag: kotlin.Int, owner: kotlin.String, name: kotlin.String, descriptor: kotlin.String, isInterface: kotlin.Boolean): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                        tag: CONST Int type=kotlin.Int value=6
+                        owner: CONST String type=kotlin.String value="java/lang/invoke/LambdaMetafactory"
+                        name: CONST String type=kotlin.String value="metafactory"
+                        descriptor: CONST String type=kotlin.String value="(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;"
+                        isInterface: CONST Boolean type=kotlin.Boolean value=false
+                      bootstrapMethodArguments: VARARG type=kotlin.Array<kotlin.Any> varargElementType=kotlin.Any
+                        CALL 'public final fun <jvm-original-method-type> (method: kotlin.Any): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                          method: RAW_FUNCTION_REFERENCE 'public abstract fun invoke (): R of kotlin.Function0 [operator] declared in kotlin.Function0' type=kotlin.Any
+                        RAW_FUNCTION_REFERENCE 'private final fun invokeSuspend$lambda$0 ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>): com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Any
+                        CALL 'public final fun <jvm-original-method-type> (method: kotlin.Any): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                          method: RAW_FUNCTION_REFERENCE 'public abstract fun invoke (): com.popkter.robot.status.RobotStatus [fake_override,operator] declared in kotlin.jvm.internal.invokeDynamic.<fake>' type=kotlin.Any
+                action: BLOCK type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                  CLASS SUSPEND_LAMBDA CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.coroutines.jvm.internal.SuspendLambda; kotlin.jvm.functions.Function2<com.popkter.robot.status.RobotStatus, kotlin.coroutines.Continuation<kotlin.Unit>?, kotlin.Any?>]
+                    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>
+                    FIELD name:label type:kotlin.Int visibility:public/*package*/
+                    CONSTRUCTOR SUSPEND_LAMBDA visibility:public/*package*/ <> ($eyeTransitionState:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $robotStatus$delegate:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>, $completion:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>?) returnType:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> [primary]
+                      VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$eyeTransitionState index:0 type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>
+                      VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$robotStatus$delegate index:1 type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>
+                      VALUE_PARAMETER name:$completion index:2 type:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>?
+                      BLOCK_BODY
+                        SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                          receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                          value: GET_VAR '$eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.<init>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                        SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                          receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                          value: GET_VAR '$robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.<init>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+                        DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> (arity: kotlin.Int, $completion: kotlin.coroutines.Continuation<kotlin.Any?>?) declared in kotlin.coroutines.jvm.internal.SuspendLambda'
+                          arity: CONST Int type=kotlin.Int value=2
+                          $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.<init>' type=kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>? origin=null
+                        BLOCK type=kotlin.Unit origin=null
+                    FUN name:invokeSuspend visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>, $result:kotlin.Result<kotlin.Any?>) returnType:kotlin.Any?
+                      overridden:
+                        protected abstract fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in kotlin.coroutines.jvm.internal.SuspendLambda
+                      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>
+                      VALUE_PARAMETER name:$result index:0 type:kotlin.Result<kotlin.Any?>
+                      BLOCK_BODY
+                        CALL 'public open fun <set-targetState> (<set-?>: S of androidx.compose.animation.core.MutableTransitionState): kotlin.Unit declared in androidx.compose.animation.core.MutableTransitionState' type=kotlin.Unit origin=EQ
+                          $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                            receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                          <set-?>: CALL 'public final fun access$Robot$lambda$0 ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>): com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt' type=com.popkter.robot.status.RobotStatus origin=GET_LOCAL_PROPERTY
+                            $robotStatus$delegate: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+                              receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                    FUN name:create visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>, value:kotlin.Any?, $completion:kotlin.coroutines.Continuation<kotlin.Nothing>) returnType:kotlin.coroutines.Continuation<kotlin.Unit>
+                      overridden:
+                        public open fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in kotlin.coroutines.jvm.internal.SuspendLambda
+                      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>
+                      VALUE_PARAMETER name:value index:0 type:kotlin.Any?
+                      VALUE_PARAMETER name:$completion index:1 type:kotlin.coroutines.Continuation<kotlin.Nothing>
+                      BLOCK_BODY
+                        RETURN type=kotlin.Nothing from='public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>'
+                          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>, $completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>?) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                            $eyeTransitionState: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                              receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.create' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                            $robotStatus$delegate: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+                              receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.create' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                            $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Nothing> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.create' type=kotlin.coroutines.Continuation<kotlin.Nothing> origin=null
+                    FUN name:invoke visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>, p1:com.popkter.robot.status.RobotStatus, p2:kotlin.coroutines.Continuation<kotlin.Unit>?) returnType:kotlin.Any?
+                      overridden:
+                        public abstract fun invoke (p1: P1 of kotlin.jvm.functions.Function2, p2: P2 of kotlin.jvm.functions.Function2): R of kotlin.jvm.functions.Function2 declared in kotlin.jvm.functions.Function2
+                      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>
+                      VALUE_PARAMETER name:p1 index:0 type:com.popkter.robot.status.RobotStatus
+                      VALUE_PARAMETER name:p2 index:1 type:kotlin.coroutines.Continuation<kotlin.Unit>?
+                      BLOCK_BODY
+                        RETURN type=kotlin.Nothing from='public final fun invoke (p1: com.popkter.robot.status.RobotStatus, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>'
+                          CALL 'public final fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Any? origin=null
+                            $this: TYPE_OP type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=IMPLICIT_CAST typeOperand=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>
+                              CALL 'public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                                $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invoke' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                                value: GET_VAR 'p1: com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invoke' type=com.popkter.robot.status.RobotStatus origin=null
+                                $completion: GET_VAR 'p2: kotlin.coroutines.Continuation<kotlin.Unit>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invoke' type=kotlin.coroutines.Continuation<kotlin.Unit>? origin=null
+                            $result: CALL 'public final fun <unsafe-coerce> <T, R> (v: T of kotlin.jvm.internal.<unsafe-coerce>): R of kotlin.jvm.internal.<unsafe-coerce> declared in kotlin.jvm.internal' type=kotlin.Result<kotlin.Any?> origin=null
+                              <T>: kotlin.Any?
+                              <R>: kotlin.Result<kotlin.Any?>
+                              v: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+                    FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final]
+                    FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final]
+                    FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?) returnType:kotlin.Any?
+                      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>
+                      VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+                      VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+                      EXPRESSION_BODY
+                        RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>'
+                          CALL 'public final fun invoke (p1: com.popkter.robot.status.RobotStatus, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Any? origin=BRIDGE_DELEGATION
+                            $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invoke' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                            p1: TYPE_OP type=com.popkter.robot.status.RobotStatus origin=IMPLICIT_CAST typeOperand=com.popkter.robot.status.RobotStatus
+                              GET_VAR 'p1: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invoke' type=kotlin.Any? origin=null
+                            p2: TYPE_OP type=kotlin.coroutines.Continuation<*> origin=IMPLICIT_CAST typeOperand=kotlin.coroutines.Continuation<*>
+                              GET_VAR 'p2: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.invoke' type=kotlin.Any? origin=null
+                  CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>, $completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>?) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided> origin=null
+                    $eyeTransitionState: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                      receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                    $robotStatus$delegate: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+                      receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                    $completion: CONST Null type=kotlin.Nothing? value=null
+                $completion: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+          FUN name:create visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, value:kotlin.Any?, $completion:kotlin.coroutines.Continuation<kotlin.Nothing>) returnType:kotlin.coroutines.Continuation<kotlin.Unit>
+            overridden:
+              public open fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in kotlin.coroutines.jvm.internal.SuspendLambda
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER name:value index:0 type:kotlin.Any?
+            VALUE_PARAMETER name:$completion index:1 type:kotlin.coroutines.Continuation<kotlin.Nothing>
+            BLOCK_BODY
+              RETURN type=kotlin.Nothing from='public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>, $eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  $robotStatus$delegate: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+                    receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.create' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  $eyeTransitionState: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                    receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.create' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Nothing> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.create' type=kotlin.coroutines.Continuation<kotlin.Nothing> origin=null
+          FUN name:invoke visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, p1:kotlinx.coroutines.CoroutineScope, p2:kotlin.coroutines.Continuation<kotlin.Unit>?) returnType:kotlin.Any?
+            overridden:
+              public abstract fun invoke (p1: P1 of kotlin.jvm.functions.Function2, p2: P2 of kotlin.jvm.functions.Function2): R of kotlin.jvm.functions.Function2 declared in kotlin.jvm.functions.Function2
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER name:p1 index:0 type:kotlinx.coroutines.CoroutineScope
+            VALUE_PARAMETER name:p2 index:1 type:kotlin.coroutines.Continuation<kotlin.Unit>?
+            BLOCK_BODY
+              RETURN type=kotlin.Nothing from='public final fun invoke (p1: kotlinx.coroutines.CoroutineScope, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CALL 'public final fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Any? origin=null
+                  $this: TYPE_OP type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=IMPLICIT_CAST typeOperand=com.popkter.robot.RobotKt.Robot.<no name provided>
+                    CALL 'public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                      $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                      value: GET_VAR 'p1: kotlinx.coroutines.CoroutineScope declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlinx.coroutines.CoroutineScope origin=null
+                      $completion: GET_VAR 'p2: kotlin.coroutines.Continuation<kotlin.Unit>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlin.coroutines.Continuation<kotlin.Unit>? origin=null
+                  $result: CALL 'public final fun <unsafe-coerce> <T, R> (v: T of kotlin.jvm.internal.<unsafe-coerce>): R of kotlin.jvm.internal.<unsafe-coerce> declared in kotlin.jvm.internal' type=kotlin.Result<kotlin.Any?> origin=null
+                    <T>: kotlin.Any?
+                    <R>: kotlin.Result<kotlin.Any?>
+                    v: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+          FIELD FIELD_FOR_CAPTURED_VALUE name:$robotStatus$delegate type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final]
+          FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final]
+          FUN LOCAL_FUNCTION_FOR_LAMBDA name:invokeSuspend$lambda$0 visibility:private modality:FINAL <> ($robotStatus$delegate:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>) returnType:com.popkter.robot.status.RobotStatus
+            VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$robotStatus$delegate index:0 type:androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>
+            BLOCK_BODY
+              RETURN type=kotlin.Nothing from='private final fun invokeSuspend$lambda$0 ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>): com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CALL 'public final fun access$Robot$lambda$0 ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>): com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt' type=com.popkter.robot.status.RobotStatus origin=GET_LOCAL_PROPERTY
+                  $robotStatus$delegate: GET_VAR '$robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend$lambda$0' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+          FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?) returnType:kotlin.Any?
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+            VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+            EXPRESSION_BODY
+              RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CALL 'public final fun invoke (p1: kotlinx.coroutines.CoroutineScope, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Any? origin=BRIDGE_DELEGATION
+                  $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  p1: TYPE_OP type=kotlinx.coroutines.CoroutineScope origin=IMPLICIT_CAST typeOperand=kotlinx.coroutines.CoroutineScope
+                    GET_VAR 'p1: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlin.Any? origin=null
+                  p2: TYPE_OP type=kotlin.coroutines.Continuation<*> origin=IMPLICIT_CAST typeOperand=kotlin.coroutines.Continuation<*>
+                    GET_VAR 'p2: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlin.Any? origin=null
+        CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus>, $eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+          $robotStatus$delegate: GET_VAR 'val robotStatus$delegate: androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.runtime.State<com.popkter.robot.status.RobotStatus> origin=null
+          $eyeTransitionState: GET_VAR 'val eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+          $completion: CONST Null type=kotlin.Nothing? value=null
+    CALL 'public final fun LaunchedEffect (key1: kotlin.Any?, block: @[ExtensionFunctionType] kotlin.coroutines.SuspendFunction1<kotlinx.coroutines.CoroutineScope, kotlin.Unit>): kotlin.Unit declared in androidx.compose.runtime.EffectsKt' type=kotlin.Unit origin=null
+      key1: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+      block: BLOCK type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+        CLASS SUSPEND_LAMBDA CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.coroutines.jvm.internal.SuspendLambda; kotlin.jvm.functions.Function2<kotlinx.coroutines.CoroutineScope, kotlin.coroutines.Continuation<kotlin.Unit>?, kotlin.Any?>]
+          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+          FIELD name:label type:kotlin.Int visibility:public/*package*/
+          CONSTRUCTOR SUSPEND_LAMBDA visibility:public/*package*/ <> ($eyeTransitionState:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $viewModel:com.popkter.robot.viewmodel.RobotViewModel, $completion:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?) returnType:com.popkter.robot.RobotKt.Robot.<no name provided> [primary]
+            VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$eyeTransitionState index:0 type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>
+            VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$viewModel index:1 type:com.popkter.robot.viewmodel.RobotViewModel
+            VALUE_PARAMETER name:$completion index:2 type:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?
+            BLOCK_BODY
+              SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                value: GET_VAR '$eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.<init>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+              SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                value: GET_VAR '$viewModel: com.popkter.robot.viewmodel.RobotViewModel declared in com.popkter.robot.RobotKt.Robot.<no name provided>.<init>' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> (arity: kotlin.Int, $completion: kotlin.coroutines.Continuation<kotlin.Any?>?) declared in kotlin.coroutines.jvm.internal.SuspendLambda'
+                arity: CONST Int type=kotlin.Int value=2
+                $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.<init>' type=kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>? origin=null
+              BLOCK type=kotlin.Unit origin=null
+          FUN name:invokeSuspend visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, $result:kotlin.Result<kotlin.Any?>) returnType:kotlin.Any?
+            overridden:
+              protected abstract fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in kotlin.coroutines.jvm.internal.SuspendLambda
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER name:$result index:0 type:kotlin.Result<kotlin.Any?>
+            BLOCK_BODY
+              CALL 'public abstract fun collect (collector: kotlinx.coroutines.flow.FlowCollector<T of kotlinx.coroutines.flow.Flow>, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in kotlinx.coroutines.flow.Flow' type=kotlin.Unit origin=null
+                $this: CALL 'public final fun snapshotFlow <T> (block: kotlin.Function0<T of androidx.compose.runtime.SnapshotStateKt.snapshotFlow>): kotlinx.coroutines.flow.Flow<T of androidx.compose.runtime.SnapshotStateKt.snapshotFlow> declared in androidx.compose.runtime.SnapshotStateKt' type=kotlinx.coroutines.flow.Flow<com.popkter.robot.status.RobotStatus> origin=null
+                  <T>: com.popkter.robot.status.RobotStatus
+                  block: BLOCK type=kotlin.Function0<com.popkter.robot.status.RobotStatus> origin=LAMBDA
+                    COMPOSITE type=kotlin.Unit origin=null
+                    CALL 'public final fun <jvm-indy> <T> (dynamicCall: T of kotlin.jvm.internal.<jvm-indy>, bootstrapMethodHandle: kotlin.Any, vararg bootstrapMethodArguments: kotlin.Any): T of kotlin.jvm.internal.<jvm-indy> declared in kotlin.jvm.internal' type=kotlin.Function0<com.popkter.robot.status.RobotStatus> origin=null
+                      <T>: kotlin.Function0<com.popkter.robot.status.RobotStatus>
+                      dynamicCall: CALL 'public final fun invoke (p0: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>): kotlin.Function0<com.popkter.robot.status.RobotStatus> declared in kotlin.jvm.internal.invokeDynamic' type=kotlin.Function0<com.popkter.robot.status.RobotStatus> origin=null
+                        p0: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                          receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                      bootstrapMethodHandle: CALL 'public final fun <jvm-method-handle> (tag: kotlin.Int, owner: kotlin.String, name: kotlin.String, descriptor: kotlin.String, isInterface: kotlin.Boolean): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                        tag: CONST Int type=kotlin.Int value=6
+                        owner: CONST String type=kotlin.String value="java/lang/invoke/LambdaMetafactory"
+                        name: CONST String type=kotlin.String value="metafactory"
+                        descriptor: CONST String type=kotlin.String value="(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;"
+                        isInterface: CONST Boolean type=kotlin.Boolean value=false
+                      bootstrapMethodArguments: VARARG type=kotlin.Array<kotlin.Any> varargElementType=kotlin.Any
+                        CALL 'public final fun <jvm-original-method-type> (method: kotlin.Any): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                          method: RAW_FUNCTION_REFERENCE 'public abstract fun invoke (): R of kotlin.Function0 [operator] declared in kotlin.Function0' type=kotlin.Any
+                        RAW_FUNCTION_REFERENCE 'private final fun invokeSuspend$lambda$0 ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>): com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Any
+                        CALL 'public final fun <jvm-original-method-type> (method: kotlin.Any): kotlin.Any declared in kotlin.jvm.internal' type=kotlin.Any origin=null
+                          method: RAW_FUNCTION_REFERENCE 'public abstract fun invoke (): com.popkter.robot.status.RobotStatus [fake_override,operator] declared in kotlin.jvm.internal.invokeDynamic.<fake>' type=kotlin.Any
+                collector: BLOCK type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                  CLASS LAMBDA_IMPL CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[@[RawType] kotlinx.coroutines.flow.FlowCollector<T of kotlinx.coroutines.flow.FlowCollector>]
+                    $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>
+                    TYPE_PARAMETER name:T index:0 variance:in superTypes:[kotlin.Any?] reified:false
+                    CONSTRUCTOR GENERATED_MEMBER_IN_CALLABLE_REFERENCE visibility:public/*package*/ <> ($eyeTransitionState:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $viewModel:com.popkter.robot.viewmodel.RobotViewModel) returnType:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> [primary]
+                      VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$eyeTransitionState index:0 type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>
+                      VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$viewModel index:1 type:com.popkter.robot.viewmodel.RobotViewModel
+                      BLOCK_BODY
+                        SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                          receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                          value: GET_VAR '$eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.<init>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                        SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                          receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                          value: GET_VAR '$viewModel: com.popkter.robot.viewmodel.RobotViewModel declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.<init>' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+                        DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in kotlin.Any'
+                        BLOCK type=kotlin.Unit origin=null
+                    FUN name:emit visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>, it:com.popkter.robot.status.RobotStatus, $completion:kotlin.coroutines.Continuation<kotlin.Unit>) returnType:kotlin.Any? [suspend]
+                      overridden:
+                        public abstract fun emit (value: T of kotlinx.coroutines.flow.FlowCollector, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in kotlinx.coroutines.flow.FlowCollector
+                      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>
+                      VALUE_PARAMETER name:it index:0 type:com.popkter.robot.status.RobotStatus
+                      VALUE_PARAMETER CONTINUATION_CLASS name:$completion index:1 type:kotlin.coroutines.Continuation<kotlin.Unit>
+                      BLOCK_BODY
+                        CLASS CONTINUATION_CLASS CLASS name:<Continuation> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.coroutines.jvm.internal.ContinuationImpl]
+                          $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>
+                          FIELD CONTINUATION_CLASS_RESULT_FIELD name:result type:kotlin.Result<kotlin.Any?> visibility:public/*package*/
+                          FIELD FIELD_FOR_OUTER_THIS name:this$0 type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> visibility:public/*package*/ [final]
+                          FIELD name:label type:kotlin.Int visibility:public/*package*/
+                          CONSTRUCTOR visibility:public/*package*/ <> (this$0:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>, $completion:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>>?) returnType:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> [primary]
+                            VALUE_PARAMETER name:this$0 index:0 type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>
+                            VALUE_PARAMETER name:$completion index:1 type:kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>>?
+                            BLOCK_BODY
+                              SET_FIELD 'FIELD FIELD_FOR_OUTER_THIS name:this$0 type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>' type=kotlin.Unit origin=null
+                                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> origin=null
+                                value: GET_VAR 'this$0: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.<init>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                              DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> ($completion: kotlin.coroutines.Continuation<kotlin.Any?>?) declared in kotlin.coroutines.jvm.internal.ContinuationImpl'
+                                $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.<init>' type=kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>>? origin=null
+                          FUN name:invokeSuspend visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>, $result:kotlin.Result<kotlin.Any?>) returnType:kotlin.Any?
+                            overridden:
+                              public abstract fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in kotlin.coroutines.jvm.internal.ContinuationImpl
+                            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>
+                            VALUE_PARAMETER name:$result index:0 type:kotlin.Result<kotlin.Any?>
+                            BLOCK_BODY
+                              SET_FIELD 'FIELD CONTINUATION_CLASS_RESULT_FIELD name:result type:kotlin.Result<kotlin.Any?> visibility:public/*package*/ declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>' type=kotlin.Unit origin=null
+                                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> origin=null
+                                value: GET_VAR '$result: kotlin.Result<kotlin.Any?> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.invokeSuspend' type=kotlin.Result<kotlin.Any?> origin=null
+                              SET_FIELD 'FIELD name:label type:kotlin.Int visibility:public/*package*/ declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>' type=kotlin.Unit origin=null
+                                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> origin=null
+                                value: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                                  $this: GET_FIELD 'FIELD name:label type:kotlin.Int visibility:public/*package*/ declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>' type=kotlin.Int origin=null
+                                    receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> origin=null
+                                  other: CONST Int type=kotlin.Int value=-2147483648
+                              RETURN type=kotlin.Nothing from='public final fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>'
+                                CALL 'public final fun emit (it: com.popkter.robot.status.RobotStatus, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Any? origin=null
+                                  $this: GET_FIELD 'FIELD FIELD_FOR_OUTER_THIS name:this$0 type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                                    receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> origin=null
+                                  it: CONST Null type=com.popkter.robot.status.RobotStatus? value=null
+                                  $completion: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit.<Continuation> origin=null
+                        COMPOSITE type=kotlin.Unit origin=null
+                          CALL 'public open fun i (p0: @[EnhancedNullability] kotlin.String?, p1: @[EnhancedNullability] kotlin.String): kotlin.Int declared in android.util.Log' type=kotlin.Int origin=null
+                            p0: CONST String type=kotlin.String value="Robot:"
+                            p1: STRING_CONCATENATION type=kotlin.String
+                              CONST String type=kotlin.String value=" eyeTransitionState: "
+                              GET_VAR 'it: com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.status.RobotStatus origin=null
+                          COMPOSITE type=kotlin.Unit origin=null
+                        WHILE label=RobotKt$Robot$<no name provided>$invokeSuspend$<no name provided>$emit1 origin=WHILE_LOOP
+                          condition: CALL 'public final fun canBlinkState (): kotlin.Boolean declared in com.popkter.robot.status.RobotStatus.Companion' type=kotlin.Boolean origin=null
+                            $this: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Companion type:com.popkter.robot.status.RobotStatus.Companion visibility:public [final,static] declared in com.popkter.robot.status.RobotStatus' type=com.popkter.robot.status.RobotStatus.Companion origin=null
+                            $receiver: CALL 'public open fun <get-targetState> (): S of androidx.compose.animation.core.MutableTransitionState declared in androidx.compose.animation.core.MutableTransitionState' type=com.popkter.robot.status.RobotStatus origin=GET_PROPERTY
+                              $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                          body: BLOCK type=kotlin.Unit origin=null
+                            CALL 'public final fun delay (timeMillis: kotlin.Long, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in kotlinx.coroutines.DelayKt' type=kotlin.Unit origin=null
+                              timeMillis: CALL 'public open fun toLong (): kotlin.Long declared in kotlin.Int' type=kotlin.Long origin=null
+                                $this: CALL 'public final fun random (): kotlin.Int [inline] declared in kotlin.ranges.RangesKt' type=kotlin.Int origin=null
+                                  $receiver: CALL 'public final fun rangeTo (other: kotlin.Int): kotlin.ranges.IntRange [operator] declared in kotlin.Int' type=kotlin.ranges.IntRange origin=RANGE
+                                    $this: CONST Int type=kotlin.Int value=240
+                                    other: CONST Int type=kotlin.Int value=3000
+                              $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                            WHEN type=kotlin.Unit origin=IF
+                              BRANCH
+                                if: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                                  $this: CALL 'public final fun canBlinkState (): kotlin.Boolean declared in com.popkter.robot.status.RobotStatus.Companion' type=kotlin.Boolean origin=null
+                                    $this: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Companion type:com.popkter.robot.status.RobotStatus.Companion visibility:public [final,static] declared in com.popkter.robot.status.RobotStatus' type=com.popkter.robot.status.RobotStatus.Companion origin=null
+                                    $receiver: CALL 'public open fun <get-targetState> (): S of androidx.compose.animation.core.MutableTransitionState declared in androidx.compose.animation.core.MutableTransitionState' type=com.popkter.robot.status.RobotStatus origin=GET_PROPERTY
+                                      $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                                        receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                                then: BREAK label=null loop.label=RobotKt$Robot$<no name provided>$invokeSuspend$<no name provided>$emit1
+                            CALL 'public final fun updateStatus (status: com.popkter.robot.status.RobotStatus): kotlin.Unit declared in com.popkter.robot.viewmodel.RobotViewModel' type=kotlin.Unit origin=null
+                              $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+                                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                              status: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:com.popkter.robot.status.Blink visibility:public [final,static] declared in com.popkter.robot.status.Blink' type=com.popkter.robot.status.Blink origin=null
+                            CALL 'public final fun delay (timeMillis: kotlin.Long, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in kotlinx.coroutines.DelayKt' type=kotlin.Unit origin=null
+                              timeMillis: CONST Long type=kotlin.Long value=400
+                              $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                            WHEN type=kotlin.Unit origin=IF
+                              BRANCH
+                                if: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                                  $this: CALL 'public final fun canBlinkState (): kotlin.Boolean declared in com.popkter.robot.status.RobotStatus.Companion' type=kotlin.Boolean origin=null
+                                    $this: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:Companion type:com.popkter.robot.status.RobotStatus.Companion visibility:public [final,static] declared in com.popkter.robot.status.RobotStatus' type=com.popkter.robot.status.RobotStatus.Companion origin=null
+                                    $receiver: CALL 'public open fun <get-targetState> (): S of androidx.compose.animation.core.MutableTransitionState declared in androidx.compose.animation.core.MutableTransitionState' type=com.popkter.robot.status.RobotStatus origin=GET_PROPERTY
+                                      $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                                        receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                                then: BREAK label=null loop.label=RobotKt$Robot$<no name provided>$invokeSuspend$<no name provided>$emit1
+                            CALL 'public final fun updateStatus (status: com.popkter.robot.status.RobotStatus): kotlin.Unit declared in com.popkter.robot.viewmodel.RobotViewModel' type=kotlin.Unit origin=null
+                              $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+                                receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                              status: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:com.popkter.robot.status.Ordinary visibility:public [final,static] declared in com.popkter.robot.status.Ordinary' type=com.popkter.robot.status.Ordinary origin=null
+                    FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN <> ($this:kotlin.Any, other:kotlin.Any?) returnType:kotlin.Boolean [fake_override,operator]
+                      overridden:
+                        public open fun equals (other: kotlin.Any?): kotlin.Boolean [fake_override,operator] declared in kotlinx.coroutines.flow.FlowCollector
+                      $this: VALUE_PARAMETER name:<this> type:kotlin.Any
+                      VALUE_PARAMETER name:other index:0 type:kotlin.Any?
+                    FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.Int [fake_override]
+                      overridden:
+                        public open fun hashCode (): kotlin.Int [fake_override] declared in kotlinx.coroutines.flow.FlowCollector
+                      $this: VALUE_PARAMETER name:<this> type:kotlin.Any
+                    FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN <> ($this:kotlin.Any) returnType:kotlin.String [fake_override]
+                      overridden:
+                        public open fun toString (): kotlin.String [fake_override] declared in kotlinx.coroutines.flow.FlowCollector
+                      $this: VALUE_PARAMETER name:<this> type:kotlin.Any
+                    FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final]
+                    FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final]
+                    FUN BRIDGE name:emit visibility:public modality:OPEN <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>, value:kotlin.Any?, $completion:kotlin.coroutines.Continuation<kotlin.Unit>) returnType:kotlin.Any? [suspend]
+                      $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>>
+                      VALUE_PARAMETER BRIDGE name:value index:0 type:kotlin.Any?
+                      VALUE_PARAMETER BRIDGE name:$completion index:1 type:kotlin.coroutines.Continuation<kotlin.Unit>
+                      EXPRESSION_BODY
+                        RETURN type=kotlin.Nothing from='public open fun emit (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>'
+                          CALL 'public final fun emit (it: com.popkter.robot.status.RobotStatus, $completion: kotlin.coroutines.Continuation<kotlin.Unit>): kotlin.Any? [suspend] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=kotlin.Any? origin=BRIDGE_DELEGATION
+                            $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                            it: TYPE_OP type=com.popkter.robot.status.RobotStatus origin=IMPLICIT_CAST typeOperand=com.popkter.robot.status.RobotStatus
+                              GET_VAR 'value: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=kotlin.Any? origin=null
+                            $completion: TYPE_OP type=kotlin.coroutines.Continuation<*> origin=IMPLICIT_CAST typeOperand=kotlin.coroutines.Continuation<*>
+                              GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>.emit' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                  CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $viewModel: com.popkter.robot.viewmodel.RobotViewModel) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided><T of com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend.<no name provided>> origin=null
+                    <class: T>: <none>
+                    $eyeTransitionState: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                      receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                    $viewModel: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+                      receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                $completion: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+          FUN name:create visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, value:kotlin.Any?, $completion:kotlin.coroutines.Continuation<kotlin.Nothing>) returnType:kotlin.coroutines.Continuation<kotlin.Unit>
+            overridden:
+              public open fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in kotlin.coroutines.jvm.internal.SuspendLambda
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER name:value index:0 type:kotlin.Any?
+            VALUE_PARAMETER name:$completion index:1 type:kotlin.coroutines.Continuation<kotlin.Nothing>
+            BLOCK_BODY
+              RETURN type=kotlin.Nothing from='public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $viewModel: com.popkter.robot.viewmodel.RobotViewModel, $completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  $eyeTransitionState: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+                    receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.create' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  $viewModel: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+                    receiver: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.create' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<kotlin.Nothing> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.create' type=kotlin.coroutines.Continuation<kotlin.Nothing> origin=null
+          FUN name:invoke visibility:public modality:FINAL <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, p1:kotlinx.coroutines.CoroutineScope, p2:kotlin.coroutines.Continuation<kotlin.Unit>?) returnType:kotlin.Any?
+            overridden:
+              public abstract fun invoke (p1: P1 of kotlin.jvm.functions.Function2, p2: P2 of kotlin.jvm.functions.Function2): R of kotlin.jvm.functions.Function2 declared in kotlin.jvm.functions.Function2
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER name:p1 index:0 type:kotlinx.coroutines.CoroutineScope
+            VALUE_PARAMETER name:p2 index:1 type:kotlin.coroutines.Continuation<kotlin.Unit>?
+            BLOCK_BODY
+              RETURN type=kotlin.Nothing from='public final fun invoke (p1: kotlinx.coroutines.CoroutineScope, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CALL 'public final fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Any? origin=null
+                  $this: TYPE_OP type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=IMPLICIT_CAST typeOperand=com.popkter.robot.RobotKt.Robot.<no name provided>
+                    CALL 'public final fun create (value: kotlin.Any?, $completion: kotlin.coroutines.Continuation<kotlin.Nothing>): kotlin.coroutines.Continuation<kotlin.Unit> declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.coroutines.Continuation<kotlin.Unit> origin=null
+                      $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                      value: GET_VAR 'p1: kotlinx.coroutines.CoroutineScope declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlinx.coroutines.CoroutineScope origin=null
+                      $completion: GET_VAR 'p2: kotlin.coroutines.Continuation<kotlin.Unit>? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlin.coroutines.Continuation<kotlin.Unit>? origin=null
+                  $result: CALL 'public final fun <unsafe-coerce> <T, R> (v: T of kotlin.jvm.internal.<unsafe-coerce>): R of kotlin.jvm.internal.<unsafe-coerce> declared in kotlin.jvm.internal' type=kotlin.Result<kotlin.Any?> origin=null
+                    <T>: kotlin.Any?
+                    <R>: kotlin.Result<kotlin.Any?>
+                    v: GET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:kotlin.Unit visibility:public [final,static] declared in kotlin.Unit' type=kotlin.Unit origin=null
+          FIELD FIELD_FOR_CAPTURED_VALUE name:$eyeTransitionState type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> visibility:public/*package*/ [final]
+          FIELD FIELD_FOR_CAPTURED_VALUE name:$viewModel type:com.popkter.robot.viewmodel.RobotViewModel visibility:public/*package*/ [final]
+          FUN LOCAL_FUNCTION_FOR_LAMBDA name:invokeSuspend$lambda$0 visibility:private modality:FINAL <> ($eyeTransitionState:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>) returnType:com.popkter.robot.status.RobotStatus
+            VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$eyeTransitionState index:0 type:androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>
+            BLOCK_BODY
+              RETURN type=kotlin.Nothing from='private final fun invokeSuspend$lambda$0 ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>): com.popkter.robot.status.RobotStatus declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CALL 'public open fun <get-targetState> (): S of androidx.compose.animation.core.MutableTransitionState declared in androidx.compose.animation.core.MutableTransitionState' type=com.popkter.robot.status.RobotStatus origin=GET_PROPERTY
+                  $this: GET_VAR '$eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invokeSuspend$lambda$0' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+          FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:com.popkter.robot.RobotKt.Robot.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?) returnType:kotlin.Any?
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:com.popkter.robot.RobotKt.Robot.<no name provided>
+            VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+            VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+            EXPRESSION_BODY
+              RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>'
+                CALL 'public final fun invoke (p1: kotlinx.coroutines.CoroutineScope, p2: kotlin.coroutines.Continuation<kotlin.Unit>?): kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=kotlin.Any? origin=BRIDGE_DELEGATION
+                  $this: GET_VAR '<this>: com.popkter.robot.RobotKt.Robot.<no name provided> declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+                  p1: TYPE_OP type=kotlinx.coroutines.CoroutineScope origin=IMPLICIT_CAST typeOperand=kotlinx.coroutines.CoroutineScope
+                    GET_VAR 'p1: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlin.Any? origin=null
+                  p2: TYPE_OP type=kotlin.coroutines.Continuation<*> origin=IMPLICIT_CAST typeOperand=kotlin.coroutines.Continuation<*>
+                    GET_VAR 'p2: kotlin.Any? declared in com.popkter.robot.RobotKt.Robot.<no name provided>.invoke' type=kotlin.Any? origin=null
+        CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $viewModel: com.popkter.robot.viewmodel.RobotViewModel, $completion: kotlin.coroutines.Continuation<com.popkter.robot.RobotKt.Robot.<no name provided>>?) [primary] declared in com.popkter.robot.RobotKt.Robot.<no name provided>' type=com.popkter.robot.RobotKt.Robot.<no name provided> origin=null
+          $eyeTransitionState: GET_VAR 'val eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+          $viewModel: GET_VAR 'viewModel: com.popkter.robot.viewmodel.RobotViewModel declared in com.popkter.robot.RobotKt.Robot' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+          $completion: CONST Null type=kotlin.Nothing? value=null
+    VAR name:faceFillColor type:androidx.compose.ui.graphics.Brush [val]
+      CALL 'public final fun remember <T> (calculation: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposablesKt.remember>): T of androidx.compose.runtime.ComposablesKt.remember [inline] declared in androidx.compose.runtime.ComposablesKt' type=androidx.compose.ui.graphics.Brush origin=null
+        <T>: androidx.compose.ui.graphics.Brush
+        calculation: BLOCK type=kotlin.Function0<androidx.compose.ui.graphics.Brush> origin=LAMBDA
+          COMPOSITE type=kotlin.Unit origin=null
+          FUNCTION_REFERENCE 'private final fun Robot$lambda$2 (): androidx.compose.ui.graphics.Brush declared in com.popkter.robot.RobotKt' type=kotlin.Function0<androidx.compose.ui.graphics.Brush> origin=INLINE_LAMBDA reflectionTarget=null
+    VAR name:finiteTransition type:androidx.compose.animation.core.Transition<com.popkter.robot.status.RobotStatus> [val]
+      CALL 'public final fun rememberTransition <T> (transitionState: androidx.compose.animation.core.TransitionState<T of androidx.compose.animation.core.TransitionKt.rememberTransition>, label: kotlin.String?): androidx.compose.animation.core.Transition<T of androidx.compose.animation.core.TransitionKt.rememberTransition> declared in androidx.compose.animation.core.TransitionKt' type=androidx.compose.animation.core.Transition<com.popkter.robot.status.RobotStatus> origin=null
+        <T>: com.popkter.robot.status.RobotStatus
+        transitionState: GET_VAR 'val eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+        label: CONST String type=kotlin.String value="finiteTransition"
+    VAR name:infiniteTransition type:androidx.compose.animation.core.InfiniteTransition [val]
+      CALL 'public final fun rememberInfiniteTransition (label: kotlin.String): androidx.compose.animation.core.InfiniteTransition declared in androidx.compose.animation.core.InfiniteTransitionKt' type=androidx.compose.animation.core.InfiniteTransition origin=null
+        label: CONST String type=kotlin.String value="infiniteTransition"
+    VAR name:textMeasurer type:androidx.compose.ui.text.TextMeasurer [val]
+      CALL 'public final fun rememberTextMeasurer$default (cacheSize: kotlin.Int, $mask0: kotlin.Int, $handler: kotlin.Any?): androidx.compose.ui.text.TextMeasurer declared in androidx.compose.ui.text.TextMeasurerHelperKt' type=androidx.compose.ui.text.TextMeasurer origin=DEFAULT_DISPATCH_CALL
+        cacheSize: COMPOSITE type=kotlin.Int origin=DEFAULT_VALUE
+          CONST Int type=kotlin.Int value=0
+        $mask0: CONST Int type=kotlin.Int value=1
+        $handler: CONST Null type=kotlin.Any? value=null
+    CALL 'public final fun Row$default (modifier: androidx.compose.ui.Modifier?, horizontalArrangement: androidx.compose.foundation.layout.Arrangement.Horizontal?, verticalAlignment: androidx.compose.ui.Alignment.Vertical?, content: @[Composable] @[ExtensionFunctionType] kotlin.Function1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>, $mask0: kotlin.Int, $handler: kotlin.Any?): kotlin.Unit [inline] declared in androidx.compose.foundation.layout.RowKt' type=kotlin.Unit origin=DEFAULT_DISPATCH_CALL
+      modifier: COMPOSITE type=androidx.compose.ui.Modifier? origin=DEFAULT_VALUE
+        CONST Null type=androidx.compose.ui.Modifier? value=null
+      horizontalArrangement: COMPOSITE type=androidx.compose.foundation.layout.Arrangement.Horizontal? origin=DEFAULT_VALUE
+        CONST Null type=androidx.compose.foundation.layout.Arrangement.Horizontal? value=null
+      verticalAlignment: COMPOSITE type=androidx.compose.ui.Alignment.Vertical? origin=DEFAULT_VALUE
+        CONST Null type=androidx.compose.ui.Alignment.Vertical? value=null
+      content: BLOCK type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.foundation.layout.RowScope, kotlin.Unit> origin=LAMBDA
+        COMPOSITE type=kotlin.Unit origin=null
+        FUNCTION_REFERENCE 'private final fun Robot$lambda$10 ($faceFillColor: androidx.compose.ui.graphics.Brush, $eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus>, $finiteTransition: androidx.compose.animation.core.Transition<com.popkter.robot.status.RobotStatus>, $infiniteTransition: androidx.compose.animation.core.InfiniteTransition, $textMeasurer: androidx.compose.ui.text.TextMeasurer, $viewModel: com.popkter.robot.viewmodel.RobotViewModel): kotlin.Unit declared in com.popkter.robot.RobotKt' type=@[ExtensionFunctionType] kotlin.Function1<androidx.compose.foundation.layout.RowScope, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+          $faceFillColor: GET_VAR 'val faceFillColor: androidx.compose.ui.graphics.Brush [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.ui.graphics.Brush origin=null
+          $eyeTransitionState: GET_VAR 'val eyeTransitionState: androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+          $finiteTransition: GET_VAR 'val finiteTransition: androidx.compose.animation.core.Transition<com.popkter.robot.status.RobotStatus> [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.animation.core.Transition<com.popkter.robot.status.RobotStatus> origin=null
+          $infiniteTransition: GET_VAR 'val infiniteTransition: androidx.compose.animation.core.InfiniteTransition [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.animation.core.InfiniteTransition origin=null
+          $textMeasurer: GET_VAR 'val textMeasurer: androidx.compose.ui.text.TextMeasurer [val] declared in com.popkter.robot.RobotKt.Robot' type=androidx.compose.ui.text.TextMeasurer origin=null
+          $viewModel: GET_VAR 'viewModel: com.popkter.robot.viewmodel.RobotViewModel declared in com.popkter.robot.RobotKt.Robot' type=com.popkter.robot.viewmodel.RobotViewModel origin=null
+      $mask0: CONST Int type=kotlin.Int value=7
+      $handler: CONST Null type=kotlin.Any? value=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:48)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate$default(FunctionCodegen.kt:41)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethodNode(ClassCodegen.kt:405)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethod(ClassCodegen.kt:422)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generate(ClassCodegen.kt:167)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.generateFile$lambda$18(JvmIrCodegenFactory.kt:398)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseBuildersKt$createSimpleNamedCompilerPhase$1.phaseBody(PhaseBuilders.kt:68)
+	at org.jetbrains.kotlin.config.phaser.SimpleNamedCompilerPhase.phaseBody(CompilerPhase.kt:215)
+	at org.jetbrains.kotlin.config.phaser.NamedCompilerPhase.invoke(CompilerPhase.kt:111)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:51)
+	... 43 more
+Caused by: org.jetbrains.kotlin.codegen.CompilationException: Back-end (JVM) Internal error: Couldn't inline method call: CALL 'public final fun remember <T> (calculation: @[DisallowComposableCalls] kotlin.Function0<T of androidx.compose.runtime.ComposablesKt.remember>): T of androidx.compose.runtime.ComposablesKt.remember [inline] declared in androidx.compose.runtime.ComposablesKt' type=androidx.compose.animation.core.MutableTransitionState<com.popkter.robot.status.RobotStatus> origin=null
+Method: null
+File is unknown
+The root cause java.lang.IllegalStateException was thrown at: org.jetbrains.kotlin.codegen.inline.SourceCompilerForInlineKt.getMethodNode(SourceCompilerForInline.kt:128)
+	at org.jetbrains.kotlin.codegen.inline.InlineCodegen.performInline(InlineCodegen.kt:65)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genInlineCall(IrInlineCodegen.kt:163)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCallGenerator.genCall(IrInlineCallGenerator.kt:36)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:594)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:734)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitVariable(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.declarations.IrVariable.accept(IrVariable.kt:36)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:520)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:525)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:237)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:124)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:45)
+	... 52 more
+Caused by: java.lang.IllegalStateException: couldn't find inline method Landroidx/compose/runtime/ComposablesKt;.remember(Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+	at org.jetbrains.kotlin.codegen.inline.SourceCompilerForInlineKt.getMethodNode(SourceCompilerForInline.kt:128)
+	at org.jetbrains.kotlin.codegen.inline.SourceCompilerForInlineKt.loadCompiledInlineFunction(SourceCompilerForInline.kt:97)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrSourceCompilerForInline.compileInlineFunction(IrSourceCompilerForInline.kt:92)
+	at org.jetbrains.kotlin.codegen.inline.InlineCodegen.compileInline(InlineCodegen.kt:42)
+	at org.jetbrains.kotlin.codegen.inline.InlineCodegen.performInline(InlineCodegen.kt:50)
+	... 67 more
+
+
