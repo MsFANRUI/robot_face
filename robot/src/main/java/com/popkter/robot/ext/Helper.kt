@@ -4,12 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -19,15 +15,12 @@ import androidx.compose.ui.graphics.Color
 import com.popkter.robot.status.RobotStatus
 import com.popkter.robot.status.TransitionProperty
 import kotlinx.serialization.Serializable
-import java.util.UUID
 
 
 const val HEART_SAMPLE = "♥"
-const val FILL_HEART_SAMPLE = "♡"
 const val PENCIL_SAMPLE = "✎"
-const val MIC_SAMPLE = "\uD83C\uDF99"
+const val MIC_SAMPLE = "🎙"
 const val SPEECHLESS_SAMPLE = "ⲽ"
-const val NOTE_SAMPLE = "\uD83D\uDCD1"
 const val CLOUD_SAMPLE = "☁"
 const val SUN_SAMPLE = "☀"
 const val RAIN_SAMPLE = "☔"
@@ -36,9 +29,9 @@ const val MUSIC_SAMPLE = "🎹"
 const val DIALOGUE_SAMPLE = "✆"
 const val SPARK_SAMPLE = "✨"
 const val FOOTBALL_SAMPLE = "⚽"
-const val SUNGLASS_SAMPLE = "\uD83D\uDD76"
-const val CAMERA_SAMPLE = "\uD83D\uDCF7"
-const val FOCUS_SAMPLE = "\uD83E\uDEF5"
+const val SUNGLASS_SAMPLE = "🕶"
+const val CAMERA_SAMPLE = "📷"
+const val FOCUS_SAMPLE = "🫵"
 
 const val PIVOT_OFFSET = 0.707F
 
@@ -52,11 +45,6 @@ fun TransitionProperty.generateTransition(
 ) = with(this) {
     if (infinite) {
         generateInfiniteTransitionWithAnimate()
-/*        infiniteTransition.animateFloat(
-            initialValue = initialValue,
-            targetValue = targetValue,
-            animationSpec = animationSpec as InfiniteRepeatableSpec<Float>
-        )*/
     } else {
         finiteTransition.animateFloat(
             transitionSpec = { animationSpec as FiniteAnimationSpec<Float> },
@@ -74,19 +62,6 @@ fun TransitionProperty.generateInfiniteTransitionWithAnimate(): State<Float> {
         anim.animateTo(
             targetValue = targetValue,
             animationSpec = animationSpec as InfiniteRepeatableSpec<Float>
-        )
-    }
-    return anim.asState()
-}
-
-@Composable
-fun TransitionProperty.generateFiniteTransitionWithAnimate(): State<Float> {
-    val anim = remember { Animatable(initialValue) }
-    LaunchedEffect(this) {
-        anim.snapTo(initialValue)
-        anim.animateTo(
-            targetValue = targetValue,
-            animationSpec = animationSpec as FiniteAnimationSpec<Float>
         )
     }
     return anim.asState()

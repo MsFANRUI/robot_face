@@ -35,13 +35,23 @@ class ChatClient(
         private const val MAX_HISTORY_SIZE = 30
         // 触发摘要时，保留最近的消息数，只压缩更早的
         private const val KEEP_RECENT_COUNT = 10
+
+        // ★ 硬编码的默认系统提示词（用于 reset 恢复）
+        // 注意：不能是 const val，因为 trimIndent() 不是编译期常量表达式
+        val DEFAULT_SYSTEM_PROMPT = """你是一个友好的机器人助手。
+你必须每次回复都调用 set_expression 工具，根据对话内容选择合适的表情。
+即使没有特别的情感，也要调用工具并选择 Talk 表情。回复要简短自然。
+可用表情：Ordinary(默认)、Sadness(伤心)、Happiness(开心)、Music(音乐)、Coldness(冷)、Speechless(无语)、Angry(生气)、Think(思考)、Talk(说话)、Singing(唱歌)、SparkLight(灵感)、Coffee(咖啡)、Focus(专注)。
+请积极使用表情工具来表达你的情感。""".trimIndent()
     }
 
     // ==================== HTTP 客户端 ====================
-    // OkHttp 用于发送 HTTP 请求，readTimeout=0 表示不超时（流式响应需要长时间保持连接）
+    // OkHttp 用于发送 HTTP 请求。readTimeout 是"两个数据块之间"的最大静默：
+    // SSE 正常持续吐 token，60s 无任何数据即视为卡死 → 抛 SocketTimeout → onError → 恢复表情，
+    // 避免服务端 hold 住连接却不推数据时永久卡在 Think。（不限制回复总长度）
     private val client = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(0, TimeUnit.MINUTES)
+        .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
     // Handler 用于将 tool call 回调切到主线程执行（因为 updateStatus 需要在主线程）
@@ -65,12 +75,21 @@ class ChatClient(
 
     // ==================== System Prompt ====================
     // 系统提示词：告诉 LLM 它的角色、可用表情、以及要积极使用表情工具
+    // ★ 改为可变：ConfigServer 接收平板配置后可动态替换
     private val systemPrompt = JSONObject().apply {
         put("role", "system")
-        put("content", """你是一个友好的机器人助手。请用简短自然的中文回复用户。
-你可以通过 set_expression 工具来改变自己的面部表情，表达你的情感。
-可用表情：Ordinary(默认)、Sadness(伤心)、Happiness(开心)、Music(音乐)、Coldness(冷)、Speechless(无语)、Angry(生气)、Think(思考)、Talk(说话)、Singing(唱歌)、SparkLight(灵感)、Coffee(咖啡)、Focus(专注)。
-请积极使用表情工具来表达你的情感。""".trimIndent())
+        put("content", DEFAULT_SYSTEM_PROMPT)
+    }
+
+    /**
+     * 更新系统提示词（运行时动态替换）
+     * 由 ConfigServer 在收到平板配置后调用
+     */
+    fun updateSystemPrompt(newPrompt: String) {
+        synchronized(historyLock) {
+            systemPrompt.put("content", newPrompt)
+            Log.d(TAG, "系统提示词已更新: ${newPrompt.take(80)}...")
+        }
     }
 
     // ==================== Tool 定义 ====================
@@ -80,7 +99,7 @@ class ChatClient(
         put("type", "function")
         put("function", JSONObject().apply {
             put("name", "set_expression")
-            put("description", "设置机器人的面部表情，用于表达你的情感反应")
+            put("description", "设置机器人的面部表情和语音回复。每次回复都必须调用此工具，即使没有特别情感也要调用（选择 Talk）。")
             put("parameters", JSONObject().apply {
                 put("type", "object")
                 put("properties", JSONObject().apply {
@@ -94,9 +113,84 @@ class ChatClient(
                             put("Angry"); put("Think"); put("Talk")
                             put("Singing"); put("SparkLight"); put("Coffee"); put("Focus")
                         })
+                        put("text", JSONObject().apply {
+                            put("type", "string")
+                            put("description", "你要对用户说的回复内容，简短自然")
+                        })
                     })
                 })
-                put("required", JSONArray().apply { put("expression") })
+                put("required", JSONArray().apply {
+                    put("expression")
+                    put("text")
+                })
+            })
+        })
+    }
+    // 头部脚本（x5 播放预设动画）
+    private val headScriptTool = JSONObject().apply {
+        put("type", "function")
+        put("function", JSONObject().apply {
+            put("name", "head_script")
+            put("description", "控制机器人头部执行预设脚本动作（点头或摇头）")
+            put("parameters", JSONObject().apply {
+                put("type", "object")
+                put("properties", JSONObject().apply {
+                    put("action", JSONObject().apply {
+                        put("type", "string")
+                        put("description", "头部脚本动作")
+                        put("enum", JSONArray().apply {
+                            put("nod"); put("shake")
+                        })
+                    })
+                })
+                put("required", JSONArray().apply { put("action") })
+            })
+        })
+    }
+
+    // 转头（控制头部朝向）
+    private val headTurnTool = JSONObject().apply {
+        put("type", "function")
+        put("function", JSONObject().apply {
+            put("name", "head_turn")
+            put("description", "控制机器人头部转动方向")
+            put("parameters", JSONObject().apply {
+                put("type", "object")
+                put("properties", JSONObject().apply {
+                    put("action", JSONObject().apply {
+                        put("type", "string")
+                        put("description", "转头动作")
+                        put("enum", JSONArray().apply {
+                            put("turn_left"); put("turn_right")
+                            put("look_up"); put("look_down"); put("center")
+                        })
+                    })
+                })
+                put("required", JSONArray().apply { put("action") })
+            })
+        })
+    }
+
+    // 身体移动
+    private val bodyMoveTool = JSONObject().apply {
+        put("type", "function")
+        put("function", JSONObject().apply {
+            put("name", "body_move")
+            put("description", "控制机器人躯体移动")
+            put("parameters", JSONObject().apply {
+                put("type", "object")
+                put("properties", JSONObject().apply {
+                    put("action", JSONObject().apply {
+                        put("type", "string")
+                        put("description", "身体移动动作")
+                        put("enum", JSONArray().apply {
+                            put("forward"); put("back")
+                            put("turn_left"); put("turn_right")
+                            put("left"); put("right"); put("stop")
+                        })
+                    })
+                })
+                put("required", JSONArray().apply { put("action") })
             })
         })
     }
@@ -108,7 +202,9 @@ class ChatClient(
      */
     interface ChatCallback {
         fun onToolCall(name: String, arguments: String)
-        // LLM 流式回复结束后触发，传入完整回复文本（用于 TTS 播放）
+        // ★ 流式输出中每检测到完整句子即回调（用于流式 TTS 逐句推送）
+        fun onSentence(text: String) {}
+        // LLM 流式回复结束后触发，传入完整回复文本（用于保存对话历史 + 兜底 TTS）
         fun onStreamComplete(content: String) {}
         // LLM 请求失败时触发（网络错误、API 错误等）
         fun onError(message: String) {}
@@ -148,11 +244,16 @@ class ChatClient(
             put("messages", JSONArray().apply {
                 put(systemPrompt)                              // 系统提示词
                 synchronized(historyLock) {
-                    historySnapshot = conversationHistory.toList()
+                    historySnapshot = sanitizeHistory(conversationHistory.toList())
                     historySnapshot.forEach { put(it) }         // 历史对话快照
                 }
             })
-            put("tools", JSONArray().apply { put(setExpressionTool) }) // 注册工具
+            put("tools", JSONArray().apply { //注册工具
+                put(setExpressionTool)
+                put(headScriptTool)
+                put(headTurnTool)
+                put(bodyMoveTool)
+            })
             put("stream", true)                                // 开启流式响应
         }
 
@@ -189,6 +290,7 @@ class ChatClient(
                 if (!response.isSuccessful) {
                     val errorBody = response.body?.string() ?: "无响应体"
                     Log.e(TAG, "API 错误: code=${response.code}, message=${response.message}, body=$errorBody")
+                    handler.post { callback.onError("API 错误: ${response.code} ${response.message}") }
                     return
                 }
                 
@@ -200,6 +302,10 @@ class ChatClient(
                 val toolCallsMap = mutableMapOf<Int, ToolCallAccumulator>()
                 // 累积完整的回复文本（用于保存到对话历史）
                 val fullContent = StringBuilder()
+                // ★ 逐句检测：每检测到完整句子就回调（用于流式 TTS）
+                val sentenceBuffer = StringBuilder()
+                val SENTENCE_ENDS = setOf('。', '！', '？', '\n') // 。！？
+                var anySentenceSent = false  // 是否有至少一个句子已通过 onSentence 推送
 
                 try {
                     // 逐行读取 SSE（Server-Sent Events）流
@@ -222,6 +328,18 @@ class ChatClient(
                         if (content.isNotEmpty() && content != "null") {
                             // 累积完整回复（流结束后统一输出到 Logcat）
                             fullContent.append(content)
+
+                            // ★ 逐句检测：每检测到一个完整句子就立即回调（不等全文结束）
+                            sentenceBuffer.append(content)
+                            val buf = sentenceBuffer.toString()
+                            // 条件：至少 4 个字符 + 包含句子结束符
+                            if (buf.length >= 4 && buf.any { it in SENTENCE_ENDS }) {
+                                val sentence = buf.trim()
+                                sentenceBuffer.clear()
+                                anySentenceSent = true
+                                Log.d(TAG, "检测到句子: ${sentence.take(40)}...")
+                                handler.post { callback.onSentence(sentence) }
+                            }
                         }
 
                         // ---- 处理 tool_calls ----
@@ -261,7 +379,33 @@ class ChatClient(
                     Log.d(TAG, "LLM 回复: $fullContent")
                 }
 
+                // ★ 流结束时 sentenceBuffer 还有残余内容（不以标点结尾的最后一段）
+                if (sentenceBuffer.isNotEmpty()) {
+                    val remaining = sentenceBuffer.toString().trim()
+                    if (remaining.isNotEmpty()) {
+                        Log.d(TAG, "流结束，发送残余文本: ${remaining.take(40)}...")
+                        handler.post { callback.onSentence(remaining) }
+                        anySentenceSent = true
+                    }
+                }
+
+                // ★ 兜底：如果全程没检测到任何句子（如纯英文、短回复），发送全文
+                if (!anySentenceSent && fullContent.isNotEmpty()) {
+                    val fallback = fullContent.toString().trim()
+                    if (fallback.isNotEmpty()) {
+                        Log.d(TAG, "无句子结束符，兜底发送全文: ${fallback.take(40)}...")
+                        handler.post { callback.onSentence(fallback) }
+                    }
+                }
+
                 // 5. 将 LLM 的完整回复保存到对话历史（加锁保护）
+                // ★ 保护：如果流被中断导致既无 content 也无 tool_calls，跳过存储，防止污染历史
+                if (fullContent.isEmpty() && toolCallsMap.isEmpty()) {
+                    Log.w(TAG, "流结束但无有效内容（可能网络中断），跳过历史存储")
+                    handler.post { callback.onError("LLM 回复中断，请重试") }
+                    return
+                }
+
                 val assistantMsg = JSONObject().apply {
                     put("role", "assistant")
                     if (fullContent.isNotEmpty()) put("content", fullContent.toString())
@@ -314,6 +458,44 @@ class ChatClient(
         })
     }
 
+    // ==================== 对话历史清洗 ====================
+    /**
+     * 清洗对话历史，移除孤立的 tool 消息（前面没有带 tool_calls 的 assistant 消息跟随）
+     * 防止因摘要压缩或其他边界情况导致历史损坏，引发 API 400 错误
+     */
+    private fun sanitizeHistory(history: List<JSONObject>): List<JSONObject> {
+        val result = mutableListOf<JSONObject>()
+        var expectToolResponse = false
+
+        for (msg in history) {
+            val role = msg.optString("role", "")
+            when (role) {
+                "assistant" -> {
+                    val hasToolCalls = msg.optJSONArray("tool_calls")?.length() ?: 0 > 0
+                    val hasContent = msg.optString("content", "").isNotEmpty()
+                    if (!hasToolCalls && !hasContent) {
+                        Log.w(TAG, "清洗: 移除空的 assistant 消息 (无 content 且无 tool_calls)")
+                    } else {
+                        result.add(msg)
+                        expectToolResponse = hasToolCalls
+                    }
+                }
+                "tool" -> {
+                    if (expectToolResponse) {
+                        result.add(msg)
+                    } else {
+                        Log.w(TAG, "清洗: 移除孤立的 tool 消息 (无对应 tool_calls)")
+                    }
+                }
+                else -> {
+                    result.add(msg)
+                    expectToolResponse = false
+                }
+            }
+        }
+        return result
+    }
+
     // ==================== 对话历史摘要压缩 ====================
     /**
      * 当对话历史过长时，将旧消息压缩为一条摘要，
@@ -333,7 +515,25 @@ class ChatClient(
         synchronized(historyLock) {
             if (conversationHistory.size <= MAX_HISTORY_SIZE) return
             currentSize = conversationHistory.size
-            val splitIndex = conversationHistory.size - KEEP_RECENT_COUNT
+            var splitIndex = conversationHistory.size - KEEP_RECENT_COUNT
+
+            // ★ 修复：不要在 tool_calls ↔ tool 配对中间切割
+            // 如果 splitIndex 落在 tool 消息上，向前找到这组 tool 响应的起点
+            if (splitIndex > 0 && splitIndex < conversationHistory.size
+                && conversationHistory[splitIndex].optString("role") == "tool") {
+                // 向前跳过所有连续的 tool 消息
+                while (splitIndex > 0 && conversationHistory[splitIndex - 1].optString("role") == "tool") {
+                    splitIndex--
+                }
+                // 如果前面是带 tool_calls 的 assistant，也归入 recent（保持配对完整）
+                if (splitIndex > 0 && conversationHistory[splitIndex - 1].optString("role") == "assistant") {
+                    val prevAssistant = conversationHistory[splitIndex - 1]
+                    if (prevAssistant.optJSONArray("tool_calls")?.length() ?: 0 > 0) {
+                        splitIndex--
+                    }
+                }
+            }
+
             oldMessages = conversationHistory.subList(0, splitIndex).toList()
             recentMessages = conversationHistory.subList(splitIndex, conversationHistory.size).toList()
         }

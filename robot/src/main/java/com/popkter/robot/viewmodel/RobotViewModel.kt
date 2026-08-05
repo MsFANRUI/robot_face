@@ -30,6 +30,8 @@ class RobotViewModel : ViewModel() {
     private val mRobotStatusFlow = MutableStateFlow<RobotStatus>(Ordinary)
     private val _status = MutableStateFlow<RobotStatus>(Ordinary)
     val robotStatus: StateFlow<RobotStatus> = _status.asStateFlow()
+    /** 真正的目标表情（不受 blink 动画污染），供 orchestrator 保存/恢复用 */
+    val targetStatus: RobotStatus get() = mRobotStatusFlow.value
 
     private val _statusRound = MutableStateFlow<Pair<RobotStatus, Int>>(Ordinary to 0)
     val robotStatusRound: StateFlow<Pair<RobotStatus, Int>> = _statusRound.asStateFlow()
@@ -39,8 +41,10 @@ class RobotViewModel : ViewModel() {
     private var round = 0
 
     fun updateStatus(status: RobotStatus) {
+        Log.d(TAG, "updateStatus: $status")
         viewModelScope.launch {
             mRobotStatusFlow.emit(status)
+            Log.d(TAG, "mRobotStatusFlow emitted: $status, value=${mRobotStatusFlow.value}")
         }
     }
 
@@ -71,16 +75,30 @@ class RobotViewModel : ViewModel() {
                     _status.emit(it)
                     blinkJob?.cancel()
                     if (it.canBlinkState()) {
+                        blinkJob?.cancel()
                         blinkJob = viewModelScope.launch {
                             val rng = (240..3000)
-                            while (isActive && _status.value.canBlinkState()) {
-                                delay(rng.random().toLong())
-                                if (!_status.value.canBlinkState()) break
+                            while (isActive && mRobotStatusFlow.value.canBlinkState()) {
+                                val delayMs = rng.random().toLong()
+                                Log.d(TAG, "blink: 等待 ${delayMs}ms, flow=${mRobotStatusFlow.value}")
+                                delay(delayMs)
+                                val beforeBlink = mRobotStatusFlow.value
+                                Log.d(TAG, "blink: beforeBlink=$beforeBlink, _status=${_status.value}")
+                                if (!beforeBlink.canBlinkState()) {
+                                    Log.d(TAG, "blink: beforeBlink 不可 blink，退出循环")
+                                    break
+                                }
                                 _status.emit(Blink)
+                                Log.d(TAG, "blink: → Blink")
                                 delay(400)
-                                if (!_status.value.canBlinkState()) break
-                                _status.emit(Ordinary)
+                                if (_status.value == Blink) {
+                                    _status.emit(beforeBlink)
+                                    Log.d(TAG, "blink: → 恢复 $beforeBlink")
+                                } else {
+                                    Log.d(TAG, "blink: _status 已不是 Blink(${_status.value})，跳过恢复")
+                                }
                             }
+                            Log.d(TAG, "blink: 循环结束, flow=${mRobotStatusFlow.value}, _status=${_status.value}")
                         }
                     }
                 }

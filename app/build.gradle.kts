@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 // 从 local.properties 读取 API Key（避免硬编码到源码中）
@@ -29,6 +30,10 @@ android {
         buildConfigField("String", "LLM_API_KEY", "\"${localProperties.getProperty("LLM_API_KEY", "")}\"")
         buildConfigField("String", "TTS_API_KEY", "\"${localProperties.getProperty("TTS_API_KEY", "")}\"")
         buildConfigField("String", "ASR_API_KEY", "\"${localProperties.getProperty("ASR_API_KEY", "")}\"")
+
+        // UDP(x5_server 联调):默认 127.0.0.1:8765;模拟器连宿主机填 10.0.2.2,真机填 x5 所在机 LAN IP
+        buildConfigField("String", "UDP_HOST", "\"${localProperties.getProperty("UDP_HOST", "127.0.0.1")}\"")
+        buildConfigField("int", "UDP_PORT", localProperties.getProperty("UDP_PORT", "8765"))
     }
 
     buildTypes {
@@ -54,6 +59,12 @@ dependencies {
 
     implementation(project(":robot"))
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.mlkit.face.detection)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

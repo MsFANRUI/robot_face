@@ -10,18 +10,70 @@ import okhttp3.WebSocketListener
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Base64
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 class QwenASRClient(
     private val apiKey: String,
-    private val onTranscript: (String) -> Unit  // 识别结果回调
+    private val onTranscript: (String) -> Unit,        // 最终识别结果回调
+    private val onPartialResult: (String) -> Unit = {}  // ★ 部分识别结果回调（用于唤醒词检测）
 ) {
     companion object {
         private const val TAG = "QwenASR"
         // 重连配置
         private const val INITIAL_RECONNECT_DELAY_MS = 1000L   // 初始重连延迟 1s
         private const val MAX_RECONNECT_DELAY_MS = 30000L      // 最大延迟 30s
+
+        // ★ 全局异常处理器安装标记
+        @Volatile
+        private var handlerInstalled = false
+
+        // ==================== 安全 Executor ====================
+        // OkHttp 4.12 AsyncCall.run() 内部 catch(t: Throwable) { ... throw t } 会重新抛出异常！
+        // 普通 execute() 重写包 try-catch 拦不住这个 re-throw。
+        // 方案：用 FutureTask 包装 —— FutureTask.run() 内部捕获异常后存储，不 re-throw。
+        // 在 afterExecute() 中检查 Future 提取异常并吞掉，防止崩溃。
+        private fun safeExecutor(name: String): ExecutorService {
+            return object : ThreadPoolExecutor(
+                0, Int.MAX_VALUE, 60L, TimeUnit.SECONDS,
+                LinkedBlockingQueue<Runnable>(),
+                ThreadFactory { r ->
+                    Thread(r, "OkHttp-$name").apply { isDaemon = true }
+                }
+            ) {
+                override fun execute(command: Runnable) {
+                    // FutureTask 捕获所有 Throwable（含 re-throw），不向线程逃逸
+                    val task = java.util.concurrent.FutureTask(command, null)
+                    super.execute(task)
+                }
+                override fun afterExecute(r: Runnable?, t: Throwable?) {
+                    super.afterExecute(r, t)
+                    if (t == null && r is java.util.concurrent.Future<*>) {
+                        try {
+                            r.get() // 提取 FutureTask 内部存储的异常
+                        } catch (ex: java.util.concurrent.ExecutionException) {
+                            Log.w(TAG, "OkHttp 内部异常已捕获(防崩溃): ${ex.cause?.javaClass?.simpleName}: ${ex.cause?.message}")
+                        } catch (ie: InterruptedException) {
+                            Thread.currentThread().interrupt()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ★ 全局未捕获异常处理器：兜底 OkHttp TaskRunner 内部线程逃逸的异常
+    private fun installGlobalExceptionHandler() {
+        if (!handlerInstalled) {
+            Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+                Log.w(TAG, "全局异常捕获(防崩溃) [${thread.name}]: ${throwable.javaClass.simpleName}: ${throwable.message}")
+            }
+            handlerInstalled = true
+        }
     }
 
     private var webSocket: WebSocket? = null
@@ -31,14 +83,23 @@ class QwenASRClient(
 
     // 重连控制
     private var shouldReconnect = false
+    private var reconnectScheduled = false       // 防重入：确保同一时间只有一个重连任务
     private var reconnectDelay = INITIAL_RECONNECT_DELAY_MS
     private val reconnectHandler = Handler(Looper.getMainLooper())
     private var reconnectRunnable: Runnable? = null
 
+    // ★ WebSocket 同步锁（防止 cancel/close 与 send 并发触发 TaskRunner 线程异常）
+    private val wsLock = Any()
+
     // OkHttpClient 复用（避免每次重连都创建新实例）
+    // ⚠️ 自定义 executor：OkHttp 内部 WebSocket 清理路径（failWebSocket → DeflaterSink.close）
+    //    在长时间运行后可能抛 NPE（okio buffer 竞态），该异常从线程池逃逸会导致 App 崩溃。
+    //    这里用 safeExecutor 兜底捕获，防止崩溃。
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(0, TimeUnit.MINUTES)
+        .pingInterval(15, TimeUnit.SECONDS)  // WS 心跳：检测半开/静默掉线的连接，触发自动重连
+        .dispatcher(okhttp3.Dispatcher(safeExecutor("QwenASR")))
         .build()
 
     private fun nextEventId(): String = "event_${eventIdCounter.getAndIncrement()}"
@@ -48,20 +109,29 @@ class QwenASRClient(
         reconnectDelay = INITIAL_RECONNECT_DELAY_MS
         doConnect()
     }
+
+    init {
+        installGlobalExceptionHandler()
+    }
     
     private fun doConnect() {
         val url = "wss://dashscope.aliyuncs.com/api-ws/v1/realtime?model=qwen3-asr-flash-realtime"
-    
+
         val request = Request.Builder()
             .url(url)
             .addHeader("Authorization", "Bearer $apiKey")
             .addHeader("OpenAI-Beta", "realtime=v1")
             .build()
-    
+
+        // 新建前先取消旧连接，避免手动重连时遗留半开旧 socket
+        synchronized(wsLock) {
+            try { webSocket?.cancel() } catch (_: Exception) {}
+        }
         webSocket = httpClient.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
                 Log.d(TAG, "WebSocket connected, waiting for session.created...")
                 isConnected = true
+                reconnectScheduled = false
                 reconnectDelay = INITIAL_RECONNECT_DELAY_MS  // 连接成功，重置重连延迟
             }
     
@@ -81,6 +151,10 @@ class QwenASRClient(
                 Log.d(TAG, "WebSocket closing: code=$code, reason=$reason")
                 isConnected = false
                 sessionCreated = false
+                // 兜底：部分情况下 onClosed 不一定跟上，这里也尝试重连
+                if (shouldReconnect) {
+                    scheduleReconnect()
+                }
             }
     
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
@@ -100,10 +174,12 @@ class QwenASRClient(
      * 延迟从 1s 开始，每次翻倍，最大 30s
      */
     private fun scheduleReconnect() {
-        if (!shouldReconnect) return
+        if (!shouldReconnect || reconnectScheduled) return
+        reconnectScheduled = true
         reconnectRunnable?.let { reconnectHandler.removeCallbacks(it) }
         Log.d(TAG, "🔌 ${reconnectDelay}ms 后尝试重连...")
         val runnable = Runnable {
+            reconnectScheduled = false
             Log.d(TAG, "🔌 正在重连...")
             doConnect()
         }
@@ -137,8 +213,10 @@ class QwenASRClient(
                 "conversation.item.input_audio_transcription.text" -> {
                     val partialText = json.optString("text", "")
                     val stash = json.optString("stash", "")
-                    if (partialText.isNotBlank() || stash.isNotBlank()) {
+                    val combined = (partialText + stash).trim()
+                    if (combined.isNotBlank()) {
                         Log.d(TAG, "Transcript partial: text=$partialText, stash=$stash")
+                        onPartialResult(combined)  // ★ 回调给 Orchestrator 做唤醒词检测
                     }
                 }
                 "input_audio_buffer.speech_started" -> {
@@ -181,7 +259,13 @@ class QwenASRClient(
         }
         val msg = sessionUpdate.toString()
         Log.d(TAG, "sendSessionUpdate: $msg")
-        webSocket?.send(msg)
+        synchronized(wsLock) {
+            try {
+                webSocket?.send(msg)
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "sendSessionUpdate: WebSocket 已关闭，忽略发送: ${e.message}")
+            }
+        }
     }
 
     fun sendAudio(pcmData: ByteArray) {
@@ -195,16 +279,29 @@ class QwenASRClient(
             put("type", "input_audio_buffer.append")
             put("audio", encoded)
         }
-        webSocket?.send(event.toString())
+        synchronized(wsLock) {
+            try {
+                webSocket?.send(event.toString())
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "sendAudio: WebSocket 已关闭，忽略发送: ${e.message}")
+                isConnected = false
+                sessionCreated = false
+                scheduleReconnect()
+            }
+        }
     }
 
     fun disconnect() {
         Log.d(TAG, "disconnect() called")
         shouldReconnect = false
+        reconnectScheduled = false
         reconnectRunnable?.let { reconnectHandler.removeCallbacks(it) }
         reconnectRunnable = null
-        webSocket?.close(1000, "disconnect")
+        synchronized(wsLock) {
+            try { webSocket?.close(1000, "disconnect") } catch (_: Exception) {}
+        }
         isConnected = false
         sessionCreated = false
     }
+
 }

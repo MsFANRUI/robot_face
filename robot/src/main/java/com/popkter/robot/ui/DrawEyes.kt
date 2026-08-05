@@ -1,6 +1,5 @@
 package com.popkter.robot.ui
 
-import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.Transition
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
@@ -81,6 +80,8 @@ fun RobotStatus.DrawEyes(
 
     val rightEyeVerticalTransition by rightEyeVerticalTransition.generateTransition(finiteTransition)
 
+    val fillColor = hexStringToColor(eyesFillColor)
+
     Canvas(modifier = modifier) {
 
         val eyeScale = 2.5f  // 全局眼睛缩放系数
@@ -110,7 +111,7 @@ fun RobotStatus.DrawEyes(
                         rotateAngle = leftEyeRotatedAngle,
                         scaleX = leftEyeScaleX,
                         scaleY = leftEyeScaleY,
-                        fillColor = hexStringToColor(eyesFillColor)
+                        fillColor = fillColor
                     )
 
                     drawEye(
@@ -124,7 +125,7 @@ fun RobotStatus.DrawEyes(
                         rotateAngle = rightEyeRotatedAngle,
                         scaleX = rightEyeScaleX,
                         scaleY = rightEyeScaleY,
-                        fillColor = hexStringToColor(eyesFillColor)
+                        fillColor = fillColor
                     )
                 }
             }
