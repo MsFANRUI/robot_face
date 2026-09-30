@@ -80,7 +80,10 @@ class QwenASRClient(
     private var isConnected = false
     private var sessionCreated = false
     private val eventIdCounter = AtomicLong(1)
-
+    // ★ 连接代数：每次 doConnect 递增，旧连接的回调发现代数不匹配则忽略
+    // 防止 cancel 旧连接触发的 onClosed 导致重连循环
+    @Volatile
+    private var connectionGeneration = 0
     // 重连控制
     private var shouldReconnect = false
     private var reconnectScheduled = false       // 防重入：确保同一时间只有一个重连任务
@@ -123,12 +126,16 @@ class QwenASRClient(
             .addHeader("OpenAI-Beta", "realtime=v1")
             .build()
 
+        // ★ 递增连接代数，让旧连接的回调失效
+        val myGen = ++connectionGeneration
+
         // 新建前先取消旧连接，避免手动重连时遗留半开旧 socket
         synchronized(wsLock) {
             try { webSocket?.cancel() } catch (_: Exception) {}
         }
         webSocket = httpClient.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
+                if (myGen != connectionGeneration) return  // ★ 旧连接回调，忽略
                 Log.d(TAG, "WebSocket connected, waiting for session.created...")
                 isConnected = true
                 reconnectScheduled = false
@@ -136,11 +143,13 @@ class QwenASRClient(
             }
     
             override fun onMessage(webSocket: WebSocket, text: String) {
+                if (myGen != connectionGeneration) return  // ★ 旧连接回调，忽略
                 Log.d(TAG, "onMessage: ${text.take(300)}")
                 handleMessage(text)
             }
     
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
+                if (myGen != connectionGeneration) return  // ★ 旧连接回调，忽略
                 Log.e(TAG, "WebSocket error: ${t.message}, code=${response?.code}")
                 isConnected = false
                 sessionCreated = false
@@ -148,6 +157,7 @@ class QwenASRClient(
             }
     
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                if (myGen != connectionGeneration) return  // ★ 旧连接回调，忽略
                 Log.d(TAG, "WebSocket closing: code=$code, reason=$reason")
                 isConnected = false
                 sessionCreated = false
@@ -158,6 +168,10 @@ class QwenASRClient(
             }
     
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                if (myGen != connectionGeneration) {
+                    Log.d(TAG, "旧连接 onClosed (gen=$myGen, current=$connectionGeneration)，忽略")
+                    return  // ★ 旧连接被 cancel 触发的，忽略！
+                }
                 Log.d(TAG, "WebSocket closed: code=$code, reason=$reason")
                 isConnected = false
                 sessionCreated = false
@@ -206,7 +220,7 @@ class QwenASRClient(
                 "conversation.item.input_audio_transcription.completed" -> {
                     val transcript = json.optString("transcript", "")
                     if (transcript.isNotBlank()) {
-                        Log.d(TAG, "Transcript final: $transcript")
+                        Log.d(TAG, "✅ [ASR最终] transcript=\"$transcript\"")
                         onTranscript(transcript)
                     }
                 }
@@ -215,15 +229,15 @@ class QwenASRClient(
                     val stash = json.optString("stash", "")
                     val combined = (partialText + stash).trim()
                     if (combined.isNotBlank()) {
-                        Log.d(TAG, "Transcript partial: text=$partialText, stash=$stash")
+                        Log.d(TAG, "📝 [ASR部分] text=\"$partialText\" stash=\"$stash\" → combined=\"$combined\"")
                         onPartialResult(combined)  // ★ 回调给 Orchestrator 做唤醒词检测
                     }
                 }
                 "input_audio_buffer.speech_started" -> {
-                    Log.d(TAG, "Speech started")
+                    Log.d(TAG, "🎤 [ASR VAD] 检测到说话开始")
                 }
                 "input_audio_buffer.speech_stopped" -> {
-                    Log.d(TAG, "Speech stopped")
+                    Log.d(TAG, "🔇 [ASR VAD] 检测到说话结束")
                 }
                 "error" -> {
                     val error = json.optJSONObject("error")
@@ -268,9 +282,18 @@ class QwenASRClient(
         }
     }
 
+    private var audioChunkCount = 0L  // ★ 音频帧计数器
+    private var audioByteTotal = 0L   // ★ 音频字节总数
+
     fun sendAudio(pcmData: ByteArray) {
         if (!isConnected || !sessionCreated) {
             return
+        }
+        audioChunkCount++
+        audioByteTotal += pcmData.size
+        // ★ 每 10 帧打印一次音频发送状态（持续刷新）
+        if (audioChunkCount % 10 == 0L) {
+            Log.d(TAG, "📤 [ASR音频] 帧#$audioChunkCount | 本帧=${pcmData.size}B | 累计=${audioByteTotal / 1024}KB")
         }
         // 音频数据需要 base64 编码后包装在 JSON 里发送
         val encoded = Base64.getEncoder().encodeToString(pcmData)

@@ -1,5 +1,7 @@
 package com.popkter.robotface.orchestrator
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.popkter.robot.status.RobotStatus
 import com.popkter.robotface.ChatClient
@@ -73,6 +75,24 @@ class ConversationOrchestrator(
     // ★ TTS 安全看门狗：如果 TTS 播放超过此时间仍未 onComplete，强制重置状态
     private var ttsStartTime = 0L
     private val TTS_SAFETY_TIMEOUT_MS = 15_000L  // 15 秒超时
+    // ★ Bug 2 修复：独立看门狗定时器（不依赖 ASR 回调触发）
+    private val watchdogHandler = Handler(Looper.getMainLooper())
+    private val watchdogRunnable: Runnable = Runnable {
+        if (isTTSPlaying && ttsStartTime > 0) {
+            val elapsed = System.currentTimeMillis() - ttsStartTime
+            if (elapsed > TTS_SAFETY_TIMEOUT_MS) {
+                Log.w(TAG, "⏰ TTS 独立看门狗超时(${elapsed}ms)，强制重置状态")
+                forceResetTTSState()
+            } else {
+                // ★ N2 修复：仍在播放且未超时 → 滚动续期（防止正常长回复被误掐断）
+                watchdogHandler.postDelayed(watchdogRunnable, 5000)
+            }
+        }
+    }
+    // ★ Bug 5 修复：本轮 LLM 回复中 TTS 是否已通过 onComplete 正常结束
+    private var ttsCompletedThisRound = false
+    // ★ N4 修复：本轮 tool call 是否已设置过表情（防止 handleStreamComplete 兜底 Talk 覆盖）
+    private var expressionSetByToolCall = false
 
     // ==================== 唤醒词检测 ====================
 
@@ -83,14 +103,6 @@ class ConversationOrchestrator(
     fun handlePartialResult(partialText: String) {
         // ★ 安全看门狗：如果 TTS 播放超时仍未 onComplete，强制重置状态
         // 防止 onComplete 回调永远不来（WebSocket 卡死、服务端不发 task-finished 等）
-        if (isTTSPlaying && ttsStartTime > 0) {
-            val elapsed = System.currentTimeMillis() - ttsStartTime
-            if (elapsed > TTS_SAFETY_TIMEOUT_MS) {
-                Log.w(TAG, "⏰ TTS 安全超时(${elapsed}ms)，强制重置状态（onComplete 可能丢失）")
-                forceResetTTSState()
-                return
-            }
-        }
         if (!isTTSPlaying) return
         val matched = wakeWords.firstOrNull { partialText.contains(it) }
         if (matched != null) {
@@ -102,16 +114,18 @@ class ConversationOrchestrator(
     /** 唤醒词触发打断：停 TTS → 恢复表情 → 清理公告状态 */
     private fun onWakeWordInterrupt() {
         Log.d(TAG, "⚡ 唤醒词打断 → 停止流式 TTS")
+        ttsTriggered = false  // ★ N1 修复：防止残留标记导致下一轮 handleStreamComplete 走错分支
+        ttsCompletedThisRound = true  // ★ N1 补充：本轮 TTS 已终止，onStreamComplete 不应再兜底播报
         streamingTTSClient.stop()
         isTTSPlaying = false
         streamingTTSStarted = false
-        isConversationActive = false  // ★ 对话结束，允许后续新对话启动
+        isConversationActive = false
+        cancelWatchdog()  // ★ Bug 2 修复
         // ★ 设置标记，让 handleTranscript 忽略紧随的 ASR final result
         wakeWordJustInterrupted = true
         restoreExpression()
 
         // ★ 清理公告状态（打招呼等）
-        // 唤醒词打断时 TTS callback 不会触发，需要手动清理
         if (isAnnouncementActive) {
             Log.d(TAG, "  公告被打断，清理公告状态")
             isAnnouncementActive = false
@@ -131,6 +145,11 @@ class ConversationOrchestrator(
      * 播放公告类语音（打招呼等），走完整 TTS 路径
      */
     fun playAnnouncement(text: String, expression: RobotStatus? = null, onComplete: () -> Unit) {
+        // ★ Bug 12 修复：公告开始前清理对话状态（防止打断进行中的对话导致 isConversationActive 泄漏）
+        isConversationActive = false
+        conversationGeneration++
+        ttsCompletedThisRound = false
+
         saveExpressionIfNeeded()
         expression?.let { setExpression(it) }
         ttsTriggered = false
@@ -140,6 +159,7 @@ class ConversationOrchestrator(
         streamingTTSStarted = true
         isAnnouncementActive = true
         announcementOnComplete = onComplete
+        startWatchdog()  // ★ Bug 2 修复：启动独立看门狗
         Log.d(TAG, "📢 播放公告: ${text.take(40)}...")
         streamingTTSClient.speak(text, createStreamingTTSCallback(gen))
         streamingTTSClient.finishInput()
@@ -242,6 +262,9 @@ class ConversationOrchestrator(
         // ★ 标记对话开始（递增代数，旧 TTS 回调将不再清理此标志）
         isConversationActive = true
         conversationGeneration++
+        ttsCompletedThisRound = false  // ★ Bug 5 修复：新一轮对话重置
+        ttsTriggered = false  // ★ N1 修复：新一轮对话重置残留标记
+        expressionSetByToolCall = false  // ★ N4 修复：新一轮对话重置表情标记
 
         if (expressionBeforeTTS == null) {
             expressionBeforeTTS = getExpression()
@@ -284,6 +307,7 @@ class ConversationOrchestrator(
             val gen = ++ttsGeneration
             isTTSPlaying = true
             ttsStartTime = System.currentTimeMillis()  // ★ 记录 TTS 开始时间（看门狗用）
+            startWatchdog()  // ★ Bug 2 修复：启动独立看门狗
             Log.d(TAG, "🎙 流式 TTS 启动，首句: ${text.take(40)}...")
             streamingTTSClient.speak(text, createStreamingTTSCallback(gen))
         } else {
@@ -309,6 +333,7 @@ class ConversationOrchestrator(
                         saveExpressionIfNeeded()
                         setExpression(status)
                         ttsTriggered = true
+                        expressionSetByToolCall = true  // ★ N4 修复
 
                         // ★ 如果流式 TTS 已在运行，先停止（tool call 的文本要用指定表情重新说）
                         if (streamingTTSStarted) {
@@ -319,12 +344,14 @@ class ConversationOrchestrator(
                         val gen = ++ttsGeneration
                         isTTSPlaying = true
                         streamingTTSStarted = true
+                        startWatchdog()  // ★ Bug 2 修复
                         streamingTTSClient.speak(ttsText, createStreamingTTSCallback(gen))
                         streamingTTSClient.finishInput()
                     } else if (status != null) {
                         Log.d(TAG, "✅ 表情: $expressionName（无 text，等兜底）")
                         saveExpressionIfNeeded()
                         setExpression(status)
+                        expressionSetByToolCall = true  // ★ N4 修复：防止 handleStreamComplete 兜底 Talk 覆盖
                     } else {
                         Log.w(TAG, "⚠️ 未知表情: $expressionName")
                     }
@@ -353,11 +380,15 @@ class ConversationOrchestrator(
             streamingTTSClient.finishInput()
             // ★ 如果 tool call 始终没设过表情，在这里兜底设 Talk
             // 此时 tool call 已经全部到达（SSE 流已结束），不会有表情冲突
+            // ★ N4 修复：tool call 已设置表情（如 Happiness 无 text）时不再覆盖
             val talk = RobotStatus.allStates.find { it::class.simpleName == "Talk" }
-            talk?.let { setExpression(it) }
+            if (!expressionSetByToolCall) talk?.let { setExpression(it) }
         } else if (ttsTriggered) {
             ttsTriggered = false
             Log.d(TAG, "LLM 回复完成，TTS 已在 tool call 中触发")
+        } else if (ttsCompletedThisRound) {
+            // ★ Bug 5 修复：本轮 TTS 已通过 onComplete 正常结束，不再重复播报
+            Log.d(TAG, "LLM 回复完成，本轮 TTS 已正常结束，跳过兜底")
         } else {
             // 兜底：LLM 没有通过 onSentence 推送过任何文本（如纯 tool call 无 content）
             val ttsText = if (content.isNotEmpty()) content else "好的"
@@ -367,8 +398,9 @@ class ConversationOrchestrator(
             talk?.let { setExpression(it) }
             val gen = ++ttsGeneration
             isTTSPlaying = true
-            ttsStartTime = System.currentTimeMillis()  // ★ 记录 TTS 开始时间
+            ttsStartTime = System.currentTimeMillis()
             streamingTTSStarted = true
+            startWatchdog()  // ★ Bug 2 修复
             streamingTTSClient.speak(ttsText, createStreamingTTSCallback(gen))
             streamingTTSClient.finishInput()
         }
@@ -379,7 +411,8 @@ class ConversationOrchestrator(
     private fun createStreamingTTSCallback(gen: Int) = object : StreamingTTSClient.Callback {
         // ★ 捕获创建时的对话代数，用于判断是否应清理 isConversationActive
         private val myConvGen = conversationGeneration
-        // ★ TTS 是否真正开始播放（onStart 触发）。连接失败时 started=false，不应恢复表情
+        // ★ Bug 13 修复：TTS 是否真正开始播放（onStart 触发），跨线程可见性
+        @Volatile
         private var started = false
         override fun onStart() {
             started = true
@@ -388,9 +421,11 @@ class ConversationOrchestrator(
         override fun onComplete() {
             if (gen != ttsGeneration) return
             Log.d(TAG, "  流式 TTS 播放完毕 (gen=$gen) → 唤醒词检测已关闭")
-            ttsStartTime = 0L  // ★ 重置看门狗
+            ttsStartTime = 0L
+            cancelWatchdog()  // ★ Bug 2 修复
             isTTSPlaying = false
             streamingTTSStarted = false
+            ttsCompletedThisRound = true  // ★ Bug 5 修复：标记本轮 TTS 已正常完成
             ttsEndCooldownUntil = System.currentTimeMillis() + TTS_END_COOLDOWN_MS
             // ★ 对话 TTS 完成，清理对话状态
             if (myConvGen == conversationGeneration) {
@@ -401,32 +436,56 @@ class ConversationOrchestrator(
         override fun onError(message: String) {
             if (gen != ttsGeneration) return
             Log.w(TAG, "  流式 TTS 出错: $message (gen=$gen)")
-            ttsStartTime = 0L  // ★ 重置看门狗
+            ttsStartTime = 0L
+            cancelWatchdog()  // ★ Bug 2 修复
             isTTSPlaying = false
             streamingTTSStarted = false
+            ttsCompletedThisRound = true  // ★ N3 修复：失败后 onStreamComplete 跳过兜底，防止重复重试
             ttsEndCooldownUntil = System.currentTimeMillis() + TTS_END_COOLDOWN_MS
             // ★ 对话 TTS 出错，清理对话状态
             if (myConvGen == conversationGeneration) {
                 isConversationActive = false
             }
-            // ★ 只有 TTS 真正播放过才恢复表情；连接失败时不恢复（防止覆盖 Think）
-            if (started) {
+            // ★ Bug 1 修复：用 expressionBeforeTTS != null 判断是否应恢复表情
+            // 只要 saveExpressionIfNeeded() 调用过（表情已保存），就必须恢复
+            if (expressionBeforeTTS != null) {
                 restoreExpression()
             } else {
-                Log.w(TAG, "  TTS 未实际播放，跳过表情恢复（保持当前 Think/Happiness 等）")
+                Log.w(TAG, "  表情未保存，跳过表情恢复")
+            }
+            // ★ Bug 11 修复：onError 也必须清理公告状态（与其他路径一致）
+            if (isAnnouncementActive) {
+                Log.d(TAG, "  TTS 出错，清理公告状态")
+                isAnnouncementActive = false
+                announcementOnComplete?.invoke()
+                announcementOnComplete = null
             }
         }
     }
 
     // ==================== 安全看门狗 ====================
 
+    /** 启动独立看门狗定时器 */
+    private fun startWatchdog() {
+        watchdogHandler.removeCallbacks(watchdogRunnable)
+        watchdogHandler.postDelayed(watchdogRunnable, TTS_SAFETY_TIMEOUT_MS + 1000)
+    }
+
+    /** 取消看门狗 */
+    private fun cancelWatchdog() {
+        watchdogHandler.removeCallbacks(watchdogRunnable)
+    }
+
     /** 强制重置所有 TTS 相关状态（看门狗超时时调用） */
     private fun forceResetTTSState() {
+        ttsTriggered = false  // ★ N1 修复
+        ttsCompletedThisRound = true  // ★ N1 补充：onStreamComplete 不应再兜底播报
         streamingTTSClient.stop()
         isTTSPlaying = false
         streamingTTSStarted = false
         isConversationActive = false
         ttsStartTime = 0L
+        cancelWatchdog()
         ttsEndCooldownUntil = System.currentTimeMillis() + TTS_END_COOLDOWN_MS
         restoreExpression()
         if (isAnnouncementActive) {

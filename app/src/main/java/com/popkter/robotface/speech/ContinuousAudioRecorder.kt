@@ -27,7 +27,10 @@ class ContinuousAudioRecorder(
     }
 
     private var recorder: AudioRecord? = null
+    @Volatile  // ★ Bug 3 修复：跨线程可见性
     private var isRecording = false
+    // ★ Bug 4 修复：AEC 保存为成员变量，stopRecording 时释放
+    private var aec: AcousticEchoCanceler? = null
 
     @SuppressLint("MissingPermission")
     fun startRecording() {
@@ -89,8 +92,8 @@ class ContinuousAudioRecorder(
         val isUsingUSBMic = usbDevice != null
         try {
             if (!isUsingUSBMic && AcousticEchoCanceler.isAvailable()) {
-                val aec = AcousticEchoCanceler.create(recorder!!.audioSessionId)
-                aec.enabled = true
+                aec = AcousticEchoCanceler.create(recorder!!.audioSessionId)
+                aec?.enabled = true
                 Log.d(TAG, "  ✅ 系统 AEC 回声消除: 已启用（内置麦克风模式）")
             } else if (isUsingUSBMic) {
                 Log.d(TAG, "  ℹ️ 使用 USB 麦克风，硬件 AEC 已处理，跳过系统 AEC")
@@ -130,6 +133,11 @@ class ContinuousAudioRecorder(
     fun stopRecording() {
         Log.d(TAG, "stopRecording()")
         isRecording = false
+        // ★ Bug 4 修复：释放 AEC 资源
+        try {
+            aec?.release()
+        } catch (_: Exception) {}
+        aec = null
         recorder?.stop()
         recorder?.release()
         recorder = null

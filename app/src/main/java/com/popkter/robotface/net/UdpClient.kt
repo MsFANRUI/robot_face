@@ -71,6 +71,8 @@ class UdpClient(
     @Volatile
     private var latestFaceTrackPayload: ByteArray = MessageProtocol.buildFaceTrack(null)
     private var lastFaceTrackSendTime = 0L
+    // ★ Bug 14 修复：face_track 日志节流（每 5 秒最多打一次）
+    private var lastFaceTrackLogTime = 0L
 
     /** 启动:建 socket + 收循环 + 统一发送循环。 */
     fun start() {
@@ -143,7 +145,11 @@ class UdpClient(
                 if (now - lastFaceTrackSendTime >= FACE_TRACK_INTERVAL_MS) {
                     sendRaw(sock, addr, latestFaceTrackPayload)
                     lastFaceTrackSendTime = now
-                    Log.d(TAG, "↑ face_track sent: ${String(latestFaceTrackPayload)}")
+                    // ★ Bug 14 修复：日志节流，每 5 秒最多打一次
+                    if (now - lastFaceTrackLogTime >= 5000) {
+                        Log.d(TAG, "↑ face_track sent: ${String(latestFaceTrackPayload)}")
+                        lastFaceTrackLogTime = now
+                    }
                 }
 
                 // 3) 事件消息:非阻塞消费队列

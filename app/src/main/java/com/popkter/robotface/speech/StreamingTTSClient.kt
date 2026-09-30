@@ -172,6 +172,10 @@ class StreamingTTSClient(
             disconnectInternal()
         }
 
+        // ★ 重置音频帧计数器
+        ttsAudioFrameCount = 0L
+        ttsAudioByteTotal = 0L
+
         // 重置状态
         _taskId = UUID.randomUUID().toString().replace("-", "")
         state = State.CONNECTING
@@ -410,10 +414,13 @@ class StreamingTTSClient(
                     Thread {
                         try {
                             var patience = 50
-                            while (patience > 0 &&
-                                (speakerTrack?.playState == AudioTrack.PLAYSTATE_PLAYING ||
-                                        refTrack?.playState == AudioTrack.PLAYSTATE_PLAYING)
-                            ) {
+                            // ★ Bug 7 修复：在 synchronized 内检查 playState，防止与 stop() 竞态
+                            while (patience > 0) {
+                                val stillPlaying = synchronized(audioTrackLock) {
+                                    speakerTrack?.playState == AudioTrack.PLAYSTATE_PLAYING ||
+                                            refTrack?.playState == AudioTrack.PLAYSTATE_PLAYING
+                                }
+                                if (!stillPlaying) break
                                 Thread.sleep(100)
                                 patience--
                             }
@@ -443,13 +450,30 @@ class StreamingTTSClient(
         }
     }
 
+    // ★ 音频帧计数器（用于日志刷新）
+    private var ttsAudioFrameCount = 0L
+    private var ttsAudioByteTotal = 0L
+
     /** 二进制音频帧到达 → 同时写入双路 AudioTrack */
     @SuppressLint("MissingPermission")
     private fun handleBinaryAudio(data: ByteArray, callback: Callback) {
         if (data.isEmpty()) return
 
+        ttsAudioFrameCount++
+        ttsAudioByteTotal += data.size
+        // ★ 每 5 帧打印一次（持续刷新）
+        if (ttsAudioFrameCount % 5 == 0L) {
+            Log.d(TAG, "🎵 [TTS音频] 帧#$ttsAudioFrameCount | 本帧=${data.size}B | 累计=${ttsAudioByteTotal / 1024}KB")
+        }
+
         synchronized(audioTrackLock) {
-            val speaker = speakerTrack ?: return
+            val speaker = speakerTrack
+            if (speaker == null) {
+                // ★ Bug 8 修复：speakerTrack 创建失败时，报错而非静默丢弃音频
+                Log.e(TAG, "speakerTrack 为 null，无法播放音频")
+                callback.onError("AudioTrack 创建失败，无法播放")
+                return
+            }
 
             // ★ 首帧到达：启动双路播放
             if (speaker.playState != AudioTrack.PLAYSTATE_PLAYING) {

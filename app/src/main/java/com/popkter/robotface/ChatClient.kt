@@ -307,6 +307,9 @@ class ChatClient(
                 val SENTENCE_ENDS = setOf('。', '！', '？', '\n') // 。！？
                 var anySentenceSent = false  // 是否有至少一个句子已通过 onSentence 推送
 
+                // ★ 流式 token 计数器（用于日志刷新）
+                var tokenCount = 0
+
                 try {
                     // 逐行读取 SSE（Server-Sent Events）流
                     // 每行格式: "data: {json}" 或 "data: [DONE]"
@@ -326,8 +329,11 @@ class ChatClient(
                         // delta.content 有值时，说明 LLM 在输出文字
                         val content = delta.optString("content", "")
                         if (content.isNotEmpty() && content != "null") {
+                            tokenCount++
                             // 累积完整回复（流结束后统一输出到 Logcat）
                             fullContent.append(content)
+                            // ★ 每个 token 都打印（持续刷新）
+                            Log.d(TAG, "🔤 [LLM token#$tokenCount] \"$content\" | 累计: ${fullContent.length}字")
 
                             // ★ 逐句检测：每检测到一个完整句子就立即回调（不等全文结束）
                             sentenceBuffer.append(content)
@@ -337,7 +343,7 @@ class ChatClient(
                                 val sentence = buf.trim()
                                 sentenceBuffer.clear()
                                 anySentenceSent = true
-                                Log.d(TAG, "检测到句子: ${sentence.take(40)}...")
+                                Log.d(TAG, "📤 [LLM句子] \"$sentence\"")
                                 handler.post { callback.onSentence(sentence) }
                             }
                         }
@@ -357,7 +363,11 @@ class ChatClient(
                                 if (tc.has("id")) acc.id = tc.getString("id")       // 工具调用 ID
                                 if (fn != null) {
                                     if (fn.has("name")) acc.name = fn.getString("name")           // 工具名称
-                                    if (fn.has("arguments")) acc.arguments.append(fn.getString("arguments")) // 参数（分段累积）
+                                    if (fn.has("arguments")) {
+                                        val args = fn.getString("arguments")
+                                        acc.arguments.append(args)
+                                        Log.d(TAG, "🔧 [LLM tool] ${acc.name} += \"$args\"")
+                                    }
                                 }
                             }
                         }
@@ -471,7 +481,7 @@ class ChatClient(
             val role = msg.optString("role", "")
             when (role) {
                 "assistant" -> {
-                    val hasToolCalls = msg.optJSONArray("tool_calls")?.length() ?: 0 > 0
+                    val hasToolCalls = (msg.optJSONArray("tool_calls")?.length() ?: 0) > 0
                     val hasContent = msg.optString("content", "").isNotEmpty()
                     if (!hasToolCalls && !hasContent) {
                         Log.w(TAG, "清洗: 移除空的 assistant 消息 (无 content 且无 tool_calls)")
@@ -528,7 +538,7 @@ class ChatClient(
                 // 如果前面是带 tool_calls 的 assistant，也归入 recent（保持配对完整）
                 if (splitIndex > 0 && conversationHistory[splitIndex - 1].optString("role") == "assistant") {
                     val prevAssistant = conversationHistory[splitIndex - 1]
-                    if (prevAssistant.optJSONArray("tool_calls")?.length() ?: 0 > 0) {
+                    if ((prevAssistant.optJSONArray("tool_calls")?.length() ?: 0) > 0) {
                         splitIndex--
                     }
                 }
